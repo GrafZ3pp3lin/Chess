@@ -12,3 +12,6 @@ Muss:
 Kann:
 - KI Schwierigkeiten
 - GUI
+
+Definition:
+Game nach FEN Notation aufbauen: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1

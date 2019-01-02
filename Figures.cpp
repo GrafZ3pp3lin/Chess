@@ -1,7 +1,9 @@
 #include "Figures.hpp"
 
 Field::Field(int x, int y) : locx(x), locy(y) {};
-Figure::Figure(int x, int y, Color color) : loc(Field(x,y)), c(color) {};
-void Figure::move(Field f) {
-    loc = f;
+Figure::Figure(int x, int y) : loc(Field(x,y)) {};
+
+// Color ist in game gespeichert. über x und y Figur auslesen. Über Figur kann type ausgelesen werden.
+std::vector<Field> getMoveSet(int x, int y, Game &game) {
+
 }
