@@ -7,7 +7,7 @@ enum class Color {BLACK, WHITE};
 
 Figuren direkt in array speichern klappt nicht, wegen abstracter Klasse.
 -> über Pointer und in Heap speichern?
--> array mit einfachen Positionen und jede Figure hat festen Wert im Array. (White King = 0)
+-> array mit einfachen Positionen und jede Figur hat festen Wert im Array. (White King = 0)
 
 */
 

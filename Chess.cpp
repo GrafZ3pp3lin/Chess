@@ -1,5 +1,27 @@
 #include <iostream>
+#include <fstream>
+#include <exception>
+#include <string>
+
 #include "Game.hpp"
+
+
+template <typename typ1>
+typ1 readFromStream(std::ifstream &stream)
+{
+    if (stream.is_open())
+    {
+        
+        char* dest = new char[sizeof(typ1)];
+        stream.read(dest, sizeof(typ1));
+        typ1 *ptr = reinterpret_cast<typ1 *>(dest);
+        return std::move(*ptr);
+    }
+    else
+    {
+        throw std::runtime_error("Could not read from file");
+    }
+}
 
 // Init Game Board Array
 void initGame(Game &game) {
@@ -105,6 +127,22 @@ void printBoard(Game &game) {
         std::cout << char(0xC4) << char(0xC4) << char(0xC4) << char(0xC1);
     }
     std::cout << char(0xC4) << char(0xC4) << char(0xC4) << char(0xD9) << std::endl;
+}
+
+void save(Game &game, char* filename) {
+    std::ofstream myfile;
+    myfile.open (filename);
+    myfile.write( (char*)&game, sizeof(Game));
+    myfile.close();
+}
+
+Game load(char* filename){
+    std::ifstream infile;
+	infile.open( filename );
+    auto ingame = readFromStream<Game>(infile);
+    infile.close();
+    printBoard(ingame);
+    return ingame;
 }
 
 int main() {
