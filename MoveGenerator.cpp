@@ -100,11 +100,17 @@ void ChessBoard::print()
         std::cout << char(0xC4) << char(0xC4) << char(0xC4) << char(0xC2);
     }
     std::cout << char(0xC4) << char(0xC4) << char(0xC4) << char(0xBF) << std::endl;
-
+    char c;
     for (int i = 0; i < 8; i++) {
         std::cout << 8 - i << " ";
         for (int j = 0; j < 8; j++) {
-            std::cout << char(0xB3) << " " << transfer(board[i * 10 + 21 + j]) << " ";
+            //Felder schwarz/weiß
+            c = ((j + i) % 2 == 0 ? char(0xDB) : c = char(0xFF));
+            char f = transfer(board[i * 10 + 21 + j]);
+            f = f == ' ' ? c : f;
+            std::cout << char(0xB3) << c << f << c;
+            //Felder nicht schwarz weiß
+            //std::cout << char(0xB3) << ' ' << transfer(board[i * 10 + 21 + j]) << ' ';
         }
         std::cout << char(0xB3) << std::endl;
         if (i < 7) {
@@ -281,7 +287,7 @@ std::vector<Move> ChessBoard::get_moveset_king(uint8_t i, Color color)
         // empty or enemy piece
         moveset.push_back(Move{i, j});
     }
-    // check for casting
+    // check for castling
     if (color == Color::WHITE)
     {
         // castling kingside
@@ -678,7 +684,7 @@ void ChessBoard::move_piece(Move m, bool ignoreFlag)
     // move piece
     board[m.to] = board[m.from];
     board[m.from] = 0;
-    // hanle flag
+    // handle flag
     if (!ignoreFlag)
     {
         // promotion
@@ -712,6 +718,7 @@ void ChessBoard::move_piece(Move m, bool ignoreFlag)
                     board[94] = board[91];
                     board[91] = 0;
                 }
+                
             }
             // black castling
             else

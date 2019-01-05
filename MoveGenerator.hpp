@@ -53,6 +53,8 @@ class ChessBoard
         void end_game();
         void print();
         void print_moveset();
+        bool is_empty(int8_t p);
+        Color get_color(uint8_t index);
         void move_piece(Move m);
         bool is_legal(Move m, Color color);
         std::vector<Move> get_moveset_all(Color color);
@@ -77,10 +79,8 @@ class ChessBoard
         std::vector<Move> get_moveset_bishop(uint8_t index, Color color);
         std::vector<Move> get_moveset_pawn(uint8_t index);
         std::vector<Move> get_moveset_pawn(uint8_t index, Color color);
-        bool is_empty(int8_t p);
         bool is_white(int8_t p);
         bool is_black(int8_t p);
-        Color get_color(uint8_t index);
         void move_piece(Move m, bool ingoreFlag);
         void promote_pawn(uint8_t index);
         uint8_t is_king_in_check(uint8_t index, Color color);
