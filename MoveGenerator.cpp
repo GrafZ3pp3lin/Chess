@@ -291,27 +291,6 @@ std::vector<Move> ChessBoard::get_moveset_king(uint8_t i, Color color)
     if (color == Color::WHITE)
     {
         // castling kingside
-        if (black_castling_kingside)
-        {
-            if (is_empty(board[96] && is_empty(board[97]))
-            && !is_king_in_check(95, color) && !is_king_in_check(96, color) && !is_king_in_check(97, color))
-            {
-                moveset.push_back(Move{95, 97, 3});
-            }
-        }
-        // castling queenside
-        if (black_castling_queenside)
-        {
-            if (is_empty(board[94] && is_empty(board[93])) && is_empty(board[92])
-            && !is_king_in_check(95, color) && !is_king_in_check(94, color) && !is_king_in_check(93, color))
-            {
-                moveset.push_back(Move{95, 93, 3});
-            }
-        }
-    }
-    else
-    {
-        // castling kingside
         if (white_castling_kingside)
         {
             if (is_empty(board[26] && is_empty(board[27]))
@@ -327,6 +306,27 @@ std::vector<Move> ChessBoard::get_moveset_king(uint8_t i, Color color)
             && !is_king_in_check(25, color) && !is_king_in_check(24, color) && !is_king_in_check(23, color))
             {
                 moveset.push_back(Move{25, 23, 3});
+            }
+        }
+    }
+    else
+    {
+        // castling kingside
+        if (black_castling_kingside)
+        {
+            if (is_empty(board[96] && is_empty(board[97]))
+            && !is_king_in_check(95, color) && !is_king_in_check(96, color) && !is_king_in_check(97, color))
+            {
+                moveset.push_back(Move{95, 97, 3});
+            }
+        }
+        // castling queenside
+        if (black_castling_queenside)
+        {
+            if (is_empty(board[94] && is_empty(board[93])) && is_empty(board[92])
+            && !is_king_in_check(95, color) && !is_king_in_check(94, color) && !is_king_in_check(93, color))
+            {
+                moveset.push_back(Move{95, 93, 3});
             }
         }
     }
