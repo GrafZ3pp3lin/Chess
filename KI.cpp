@@ -1,5 +1,6 @@
 #include "Evaluation.hpp"
 #include "MoveGenerator.hpp"
+#include "KI.hpp"
 
 int MAX_DEPTH = 4;
 
