@@ -49,6 +49,7 @@ class ChessBoard
         int8_t board[120];
         Color activePlayer;
         uint8_t endOfGame = 0; // 0: running, 1: checkmate - white wins, 2: checkmate - black wins, 3: draw
+        uint8_t gameValue = 0;
         void init();
         void end_game();
         void print();
