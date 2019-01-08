@@ -14,11 +14,11 @@ Move getNextMove(ChessBoard *board) {
         if (board->is_legal(moveset[i], board->activePlayer)) {
             ChessBoard boardCopy{*board};
             boardCopy.move_piece(moveset[i]);
-            boardCopy.setGameValue(evaluate_board(boardCopy.board));
+            boardCopy.setGameValue(evaluate_board(&boardCopy));
             boardCopy.activePlayer = !boardCopy.activePlayer;
-            int temp = calculate(boardCopy, true, 1);
-            if (highest < temp) {
-                highest = temp;
+            boardCopy.setGameValue(calculate(boardCopy, true, 1));
+            if (highest < boardCopy.getAbsGameValue()) {
+                highest = boardCopy.getAbsGameValue();
                 index = i;
             }
         }
@@ -28,7 +28,7 @@ Move getNextMove(ChessBoard *board) {
 
 int calculate(ChessBoard &board, bool enemy, int depth) {
     if (depth == MAX_DEPTH) {
-        return evaluate_board(board.board);
+        return evaluate_board(&board);
     }
     std::vector<Move> moveset = board.get_moveset_all(board.activePlayer);
     std::vector<ChessBoard> boards;
@@ -37,7 +37,7 @@ int calculate(ChessBoard &board, bool enemy, int depth) {
         if (board.is_legal(m, board.activePlayer)) {
             ChessBoard boardCopy{board};
             boardCopy.move_piece(m);
-            boardCopy.setGameValue(evaluate_board(boardCopy.board));
+            boardCopy.setGameValue(evaluate_board(&boardCopy));
             boardCopy.activePlayer = !boardCopy.activePlayer;
             boards.push_back(boardCopy);
         }
@@ -51,13 +51,13 @@ int calculate(ChessBoard &board, bool enemy, int depth) {
         }
         for (ChessBoard &b : boards) {
             if (b.getAbsGameValue() == highest) {
-                results.push_back(calculate(b, false, depth+1));
+                results.push_back(std::abs(calculate(b, false, depth+1)));
             }
         }
     }
     else {
         for (ChessBoard &b : boards) {
-            results.push_back(calculate(b, true, depth+1));
+            results.push_back(std::abs(calculate(b, true, depth+1)));
         }
     }
     return getLowest(std::move(results));
