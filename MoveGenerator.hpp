@@ -49,6 +49,7 @@ class ChessBoard
         int8_t board[120];
         Color activePlayer;
         uint8_t endOfGame = 0; // 0: running, 1: checkmate - white wins, 2: checkmate - black wins, 3: draw
+        int gameValue = 0;
         void init();
         void end_game();
         void print();
@@ -57,15 +58,12 @@ class ChessBoard
         Color get_color(uint8_t index);
         void move_piece(Move m);
         bool is_legal(Move m, Color color);
-        int getAbsGameValue();
-        void setGameValue(int value);
         std::vector<Move> get_moveset_all(Color color);
         std::vector<Move> get_legal_moveset(uint8_t index, Piece type);
         uint8_t is_king_in_check(uint8_t index, Color color);
     private:
         uint8_t moveCounter = 0;
         uint8_t pieceCounter = 32;
-        int gameValue = 0;
         uint8_t enPassant;
         bool white_castling_kingside = true;    //
         bool white_castling_queenside = true;   // only check, whether king or rook have move during the game;

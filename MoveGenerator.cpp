@@ -165,14 +165,6 @@ void ChessBoard::print_moveset()
     }
 }
 
-int ChessBoard::getAbsGameValue() {
-    return std::abs(gameValue);
-}
-
-void ChessBoard::setGameValue(int value) {
-    gameValue = value;
-}
-
 bool ChessBoard::is_white(int8_t p)
 {
     return p == 1 || p == 10 || p == 11 || p == 12 || p == 13 || p == 14;
