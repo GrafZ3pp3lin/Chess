@@ -14,7 +14,7 @@ int main(int argc, char const *argv[])
         chessBoard->move_piece(player_move);
         chessBoard->activePlayer = Color::BLACK;
         std::vector<Move> moveset = chessBoard->get_moveset_all(chessBoard->activePlayer);
-        if (moveset.size() > 0)
+        if (moveset.size() > 0 && !chessBoard->endOfGame)
         {
             int i = rand() % moveset.size();
             while (!chessBoard->is_legal(moveset[i], chessBoard->activePlayer))
