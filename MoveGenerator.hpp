@@ -60,6 +60,7 @@ class ChessBoard
         bool is_legal(Move m, Color color);
         std::vector<Move> get_moveset_all(Color color);
         std::vector<Move> get_legal_moveset(uint8_t index, Piece type);
+        uint8_t is_king_in_check(uint8_t index, Color color);
     private:
         uint8_t moveCounter = 0;
         uint8_t pieceCounter = 32;
@@ -84,7 +85,6 @@ class ChessBoard
         bool is_black(int8_t p);
         void move_piece(Move m, bool ingoreFlag);
         void promote_pawn(uint8_t index);
-        uint8_t is_king_in_check(uint8_t index, Color color);
         void check_draw();
         char* index_to_piece(uint8_t index);
 };

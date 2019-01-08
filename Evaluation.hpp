@@ -1,7 +1,7 @@
 #ifndef DHBW_CHESS_EVALUATION
 #define DHBW_CHESS_EVALUATION
 
-#include <cstdint>
+#include "MoveGenerator.hpp"
 
 /**
  * piece values
@@ -11,18 +11,12 @@
 
 enum class PieceValue
 {
-    WHITE_PAWN = 100,
-    WHITE_BISHOP = 320,
-    WHITE_KNIGHT = 330,
-    WHITE_ROOK = 500,
-    WHITE_QUEEN = 900,
-    WHITE_KING = 10000,
-    BLACK_PAWN = -100,
-    BLACK_BISHOP = -320,
-    BLACK_KNIGHT = -330,
-    BLACK_ROOK = -500,
-    BLACK_QUEEN = -900,
-    BLACK_KING = -10000
+    PAWN = 100,
+    BISHOP = 320,
+    KNIGHT = 330,
+    ROOK = 500,
+    QUEEN = 900,
+    KING = 10000
 };
 
 /**
@@ -255,6 +249,9 @@ const int blackKingTableEndGame[120] =
     0,   0,   0,   0,   0,   0,   0,   0,   0,   0
 };
 
+// bonuses and penalties
+const int checkBonus = 300; // maybe there's a better value ???
+
 /**
  * evaluation function:
  * 
@@ -272,6 +269,6 @@ const int blackKingTableEndGame[120] =
  * 
  *  - TODO: perhaps other criteria to consider
  */
-int evaluate_board(int8_t board[120]);
+int evaluate_board(ChessBoard *board);
 
 #endif
