@@ -1,4 +1,5 @@
 #include "Player.hpp"
+#include "main.hpp"
 
 #include <limits>
 
@@ -29,6 +30,23 @@ Move get_move_of_player(ChessBoard *board)
             std::cout << " > select a piece: ";
             std::cin >> buf;
             buf[0] = toupper(buf[0]);
+            //quit Game
+            if(buf[0] == 81 /*Q*/){
+                std::cout << std::endl << "  > Do you want to save your game? [Y/n]" << std::endl;
+                std::string in;
+                std::getline(std::cin, in);
+
+                if(in == "n"){
+                
+                }
+                else if(in == "y" || in == ""){
+                    std::cout << " > Please type in the name to save your game"  << std::endl;
+                    std::string in;
+                    std::getline(std::cin, in);
+                    save((*chessBoard), in);
+                }
+                exit(0);
+            }
         }
         from = square_to_index(buf);
         if (!board->is_empty(board->board[from]))
