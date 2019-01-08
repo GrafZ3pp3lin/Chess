@@ -14,7 +14,7 @@ Move getNextMove(ChessBoard *board) {
         if (board->is_legal(moveset[i], board->activePlayer)) {
             ChessBoard boardCopy{*board};
             boardCopy.move_piece(moveset[i]);
-            boardCopy.gameValue = evaluate_board(boardCopy.board);
+            boardCopy.setGameValue(evaluate_board(boardCopy.board));
             boardCopy.activePlayer = !boardCopy.activePlayer;
             int temp = calculate(boardCopy, true, 1);
             if (highest < temp) {
@@ -37,7 +37,7 @@ int calculate(ChessBoard &board, bool enemy, int depth) {
         if (board.is_legal(m, board.activePlayer)) {
             ChessBoard boardCopy{board};
             boardCopy.move_piece(m);
-            boardCopy.gameValue = evaluate_board(boardCopy.board);
+            boardCopy.setGameValue(evaluate_board(boardCopy.board));
             boardCopy.activePlayer = !boardCopy.activePlayer;
             boards.push_back(boardCopy);
         }
@@ -45,12 +45,12 @@ int calculate(ChessBoard &board, bool enemy, int depth) {
     if (enemy) {
         int highest = 0;
         for (ChessBoard &b : boards) {
-            if (b.gameValue > highest) {
-                highest = b.gameValue;
+            if (b.getAbsGameValue() > highest) {
+                highest = b.getAbsGameValue();
             }
         }
         for (ChessBoard &b : boards) {
-            if (b.gameValue == highest) {
+            if (b.getAbsGameValue() == highest) {
                 results.push_back(calculate(b, false, depth+1));
             }
         }
@@ -71,4 +71,12 @@ int getLowest(std::vector<int> values) {
         }
     }
     return lowest;
+}
+
+int getAverage(std::vector<int> values) {
+    int avg = 0;
+    for (int value : values) {
+        avg += value;
+    }
+    return avg / values.size();
 }

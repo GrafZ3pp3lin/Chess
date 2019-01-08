@@ -1,10 +1,8 @@
-#include <iostream>
+//Deprecated
+/*#include <iostream>
 #include <fstream>
 #include <exception>
 #include <string>
-
-#include "Game.hpp"
-
 
 template <typename typ1>
 typ1 readFromStream(std::ifstream &stream)
@@ -151,4 +149,4 @@ int main() {
     initGame(game);
     printBoard(game);
     return 0;
-}
+}*/
