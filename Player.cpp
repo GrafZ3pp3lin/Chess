@@ -43,7 +43,7 @@ Move get_move_of_player(ChessBoard *board)
                     std::cout << " > Please type in the name to save your game"  << std::endl;
                     std::string in;
                     std::getline(std::cin, in);
-                    save((*chessBoard), in);
+                    //save(chessBoard, in);
                 }
                 exit(0);
             }

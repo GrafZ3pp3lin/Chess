@@ -9,7 +9,7 @@
 
 extern ChessBoard* chessBoard;
 
-void save(ChessBoard &game, std::string);
+void save(ChessBoard *game, std::string);
 ChessBoard* load(std::string);
 
 #endif
