@@ -1,5 +1,5 @@
-#ifndef DHBW_CHESS_PLAYER
-#define DHBW_CHESS_PLAYER
+#ifndef DHBW_CHESS_KI
+#define DHBW_CHESS_KI
 
 #include "MoveGenerator.hpp"
 
