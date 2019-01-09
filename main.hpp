@@ -7,9 +7,8 @@
 #include <fstream>
 
 
-extern ChessBoard* chessBoard;
 
-void save(ChessBoard *game, std::string);
+void save(std::string);
 ChessBoard* load(std::string);
 
 #endif
