@@ -2,8 +2,10 @@
 #include "MoveGenerator.hpp"
 #include "KI.hpp"
 #include <iostream>
+#include <thread>
+#include <future>
 
-int MAX_DEPTH = 3;
+int MAX_DEPTH = 5;
 
 int getLowest(std::vector<int> values) {
     int lowest = values[0];
@@ -45,19 +47,33 @@ const char* temp(int8_t index)
 
 int calculate(ChessBoard &board, bool oponent, int depth);
 
+RatedMove startCalculateMove(Move m, ChessBoard *board) {
+    ChessBoard boardCopy{*board};
+    boardCopy.move_piece(m, true);
+    boardCopy.activePlayer = !boardCopy.activePlayer;
+    return RatedMove {m, calculate(boardCopy, true, 1)};
+}
+
 Move getNextMove(ChessBoard *board) {
     std::vector<Move> moveset = board->get_moveset_all(board->activePlayer);
+    std::vector<std::future<RatedMove>> futures;
     std::vector<RatedMove> moves;
     int index;
     //Hier in Threads aufteilen
     for (int i = 0; i < moveset.size(); i++) {
         if (board->is_legal(moveset[i], board->activePlayer)) {
+            futures.push_back(std::async(&startCalculateMove, moveset[i], board));
+        }
+        /*if (board->is_legal(moveset[i], board->activePlayer)) {
             ChessBoard boardCopy{*board};
             boardCopy.move_piece(moveset[i], true);
             //boardCopy.gameValue = evaluate_board(&boardCopy);
             boardCopy.activePlayer = !boardCopy.activePlayer;
             moves.push_back(RatedMove {moveset[i], calculate(boardCopy, true, 1)});
-        }
+        }*/
+    }
+    for (int i = 0; i < futures.size(); i++) {
+        moves.push_back(futures[i].get());
     }
     std::vector<RatedMove> bestMoves;
     Value v;
@@ -65,12 +81,12 @@ Move getNextMove(ChessBoard *board) {
     for (RatedMove &r : moves) {
         std::cout << "Move: from " << temp(r.move.from) << " to " << temp(r.move.to) << " has value of " << r.value << std::endl;
         if (board->activePlayer == Color::WHITE) {
-            if (r.value > v.highest || v.highest == 1) {
+            if (r.value != 1 && (r.value > v.highest || v.highest == 1)) {
                 v.highest = r.value;
             }
         }
         else {
-            if (r.value < v.lowest || v.lowest == 1) {
+            if (r.value != 1 && (r.value < v.lowest || v.lowest == 1)) {
                 v.lowest = r.value;
             }
         }
@@ -99,6 +115,7 @@ int calculate(ChessBoard &board, bool oponent, int depth) {
         }
     }
     if (oponent) {
+        /*
         Value v;
         v.highest = 1;
         for (ChessBoard &b : boards) {
@@ -113,26 +130,37 @@ int calculate(ChessBoard &board, bool oponent, int depth) {
                     v.lowest = b.gameValue;
                 }
             }
-        }
+        }*/
         for (ChessBoard &b : boards) {
             //Only calculate with best Moves from Oponent
-            if (b.gameValue == v.highest) {
+            if ((b.activePlayer != Color::WHITE && b.gameValue >= 0) || (b.activePlayer != Color::BLACK && b.gameValue <= 0)) {
                 //KI Moves
-                results.push_back(calculate(b, false, depth+1));
+                int temp = calculate(b, false, depth+1);
+                if (temp != 1) {
+                    results.push_back(temp);
+                }
             }
         }
     }
     else {
         for (ChessBoard &b : boards) {
             //Oponent Moves
-            results.push_back(calculate(b, true, depth+1));
+            int temp = calculate(b, true, depth+1);
+            if (temp != 1) {
+                results.push_back(temp);
+            }
         }
     }
-    // calculate best move for KI (also mind the best Move for Oponent!)
-    if (board.activePlayer == Color::BLACK) {
-        return getLowest(std::move(results));
+    if (results.size() > 0) {
+        // calculate best move for KI (also mind the best Move for Oponent!)
+        if (board.activePlayer == Color::BLACK) {
+            return getLowest(std::move(results));
+        }
+        else {
+            return getHighest(std::move(results));
+        }
     }
     else {
-        return getHighest(std::move(results));
+        return 1;
     }
 }
