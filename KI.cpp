@@ -115,6 +115,7 @@ int calculate(ChessBoard &board, bool oponent, int depth) {
         }
     }
     if (oponent) {
+        /*
         Value v;
         v.highest = 1;
         for (ChessBoard &b : boards) {
@@ -129,10 +130,10 @@ int calculate(ChessBoard &board, bool oponent, int depth) {
                     v.lowest = b.gameValue;
                 }
             }
-        }
+        }*/
         for (ChessBoard &b : boards) {
             //Only calculate with best Moves from Oponent
-            if (b.gameValue == v.highest) {
+            if ((b.activePlayer != Color::WHITE && b.gameValue >= 0) || (b.activePlayer != Color::BLACK && b.gameValue <= 0)) {
                 //KI Moves
                 int temp = calculate(b, false, depth+1);
                 if (temp != 1) {
