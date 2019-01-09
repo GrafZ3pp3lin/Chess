@@ -96,6 +96,9 @@ Move getNextMove(ChessBoard *board) {
             bestMoves.push_back(r);
         }
     }
+    if (bestMoves.size() == 0) {
+        throw "NoPossibleMoveError";
+    }
     return bestMoves[rand() % bestMoves.size()].move;
 }
 
@@ -161,6 +164,6 @@ int calculate(ChessBoard &board, bool oponent, int depth) {
         }
     }
     else {
-        return 1;
+        return evaluate_board(&board);
     }
 }
