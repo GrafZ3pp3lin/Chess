@@ -1,8 +1,11 @@
 #include "MoveGenerator.hpp"
+#include "Player.hpp"
 
 #include <iostream>
 #include <string>
 #include <limits>
+
+char transfer(int);
 
 char* ChessBoard::index_to_piece(uint8_t index)
 {
@@ -23,9 +26,92 @@ char* ChessBoard::index_to_piece(uint8_t index)
         default: return (char*)"";
     }
 }
-
-void ChessBoard::init()
+/**
+ * converts the ChessBoard in FEN-notation for saving
+ * */
+std::string ChessBoard::convert_to_FEN()
 {
+    std::string fen = "";
+    int jumped_fields = 0;
+    for(int i = 21; i < 99; i++){
+        if((i % 10 < 9) && (i % 10 > 0)){
+            if(board[i] > 0){
+                if(jumped_fields > 0){
+                    fen += jumped_fields;
+                    jumped_fields = 0;
+                }
+                fen += transfer(board[i]);
+            }
+            else if(board[i] == 0){
+                jumped_fields++;
+            }
+        }
+        if(i % 10 == 0){
+            if(jumped_fields > 0){
+                fen += (jumped_fields+48);
+                jumped_fields = 0;
+            }
+            fen += "/";
+        }
+    }
+
+    //active Player
+    if(activePlayer == Color::BLACK){
+        fen += " b ";
+    }
+    else{
+        fen += " w ";
+    }
+
+    //rochade
+    bool nocastling = true;
+
+    if(white_castling_kingside){
+        nocastling = false;
+        fen += "K";
+    }
+    if(white_castling_queenside){
+        nocastling = false;
+        fen += "Q";
+    }
+    if(black_castling_kingside){
+        nocastling = false;
+        fen += "k";
+    }
+    if(black_castling_queenside){
+        nocastling = false;
+        fen += "q";
+    }
+    if(nocastling){
+        fen += "-";
+    }
+
+    //en Passant
+    if(enPassant < 99 && enPassant > 21){
+        std::string field(index_to_square(enPassant));
+        fen += " " + field;
+    }
+    else{
+        fen += " -";
+    }
+
+    //Züge
+    fen += " " + (moveCounter+48);
+
+    std::cout << fen << std::endl;
+
+    return fen;
+}
+
+bool load_from_FEN(std::string fen)
+{
+    return true;
+}
+
+
+void ChessBoard::init(bool single)
+{
+    singleplayergame = single;
     // off the board
     for (uint8_t i = 0; i < 120; i++)
     {
