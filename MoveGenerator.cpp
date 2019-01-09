@@ -98,7 +98,7 @@ std::string ChessBoard::convert_to_FEN()
     //Züge
     fen += " " + (moveCounter+48);
 
-    std::cout << fen << std::endl;
+    //std::cout << fen << std::endl;
 
     return fen;
 }

@@ -47,7 +47,6 @@ int main(int argc, char const *argv[])
         else{
 
         }
-        
     }
     chessBoard->print();
     chessBoard->end_game();
@@ -60,15 +59,15 @@ int main(int argc, char const *argv[])
 void save(std::string filename) {
     std::ofstream myfile;
     myfile.open (filename);
-    myfile.write( chessBoard->convert_to_FEN().c_str());
+    //myfile.write( chessBoard->convert_to_FEN().c_str());
     myfile.close();
 }
 
-ChessBoard* load(std::string filename){
+ChessBoard* load(std::string filename){/*
     std::ifstream infile;
 	infile.open( filename );
     std::string line;
-    std::getline(infile, line)
-    infile.close();
-    return ptr;
+    std::getline(infile, line);
+    infile.close();*/
+    return nullptr;
 }
