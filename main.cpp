@@ -23,7 +23,8 @@ int main(int argc, char const *argv[])
     else{
         chessBoard = new ChessBoard{};
         chessBoard->init(true);
-        chessBoard->convert_to_FEN();
+        
+        //std::cout << chessBoard->load_from_FEN("7K/8/k1P5/7p/8/8/8/8 w KQkq - 0 1") << std::endl; // so könnte momentan ein Spiel in FEN-Notation geladen werden
     }
 
     // AI with random move selection
@@ -63,11 +64,11 @@ void save(std::string filename) {
     myfile.close();
 }
 
-ChessBoard* load(std::string filename){/*
+ChessBoard* load(std::string filename){
     std::ifstream infile;
 	infile.open( filename );
     std::string line;
     std::getline(infile, line);
-    infile.close();*/
+    infile.close();
     return nullptr;
 }
