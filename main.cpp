@@ -3,9 +3,6 @@
 #include <string>
 #include "MoveGenerator.hpp"
 
-
-ChessBoard* chessBoard;
-
 int main(int argc, char const *argv[])
 {
     std::cout << " > Do you want to load an existing game? [N/y]" << std::endl;

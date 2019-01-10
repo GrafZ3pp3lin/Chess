@@ -2,8 +2,8 @@
 #include "MoveGenerator.hpp"
 #include "KI.hpp"
 #include <iostream>
-#include <thread>
 #include <future>
+#include <limits>
 
 int MAX_DEPTH = 5;
 
@@ -45,13 +45,13 @@ const char* temp(int8_t index)
     return square;
 }
 
-int calculate(ChessBoard &board, bool oponent, int depth);
+int calculate(ChessBoard &board, bool oponent, int depth, int alpha, int beta);
 
 RatedMove startCalculateMove(Move m, ChessBoard *board) {
     ChessBoard boardCopy{*board};
     boardCopy.move_piece(m, true);
     boardCopy.activePlayer = !boardCopy.activePlayer;
-    return RatedMove {m, calculate(boardCopy, true, 1)};
+    return RatedMove {m, calculate(boardCopy, true, 1, std::numeric_limits<int>::min(), std::numeric_limits<int>::max())};
 }
 
 Move getNextMove(ChessBoard *board) {
@@ -59,18 +59,10 @@ Move getNextMove(ChessBoard *board) {
     std::vector<std::future<RatedMove>> futures;
     std::vector<RatedMove> moves;
     int index;
-    //Hier in Threads aufteilen
     for (int i = 0; i < moveset.size(); i++) {
         if (board->is_legal(moveset[i], board->activePlayer)) {
-            futures.push_back(std::async(&startCalculateMove, moveset[i], board));
+            futures.push_back(std::async(std::launch::async, &startCalculateMove, moveset[i], board));
         }
-        /*if (board->is_legal(moveset[i], board->activePlayer)) {
-            ChessBoard boardCopy{*board};
-            boardCopy.move_piece(moveset[i], true);
-            //boardCopy.gameValue = evaluate_board(&boardCopy);
-            boardCopy.activePlayer = !boardCopy.activePlayer;
-            moves.push_back(RatedMove {moveset[i], calculate(boardCopy, true, 1)});
-        }*/
     }
     for (int i = 0; i < futures.size(); i++) {
         moves.push_back(futures[i].get());
@@ -97,12 +89,12 @@ Move getNextMove(ChessBoard *board) {
         }
     }
     if (bestMoves.size() == 0) {
-        throw "NoPossibleMoveError";
+        throw std::runtime_error("NoPossibleMoveError");
     }
     return bestMoves[rand() % bestMoves.size()].move;
 }
 
-int calculate(ChessBoard &board, bool oponent, int depth) {
+int calculate(ChessBoard &board, bool oponent, int depth, int alpha, int beta) {
     if (depth == MAX_DEPTH) {
         return evaluate_board(&board);
     }
@@ -117,53 +109,30 @@ int calculate(ChessBoard &board, bool oponent, int depth) {
             boards.push_back(boardCopy);
         }
     }
-    if (oponent) {
-        /*
-        Value v;
-        v.highest = 1;
-        for (ChessBoard &b : boards) {
-            b.gameValue = evaluate_board(&b);
-            if (b.activePlayer != Color::WHITE) {
-                if (b.gameValue > v.highest || v.highest == 1) {
-                    v.highest = b.gameValue;
-                }
-            }
-            else {
-                if (b.gameValue < v.lowest || v.lowest == 1) {
-                    v.lowest = b.gameValue;
-                }
-            }
-        }*/
-        for (ChessBoard &b : boards) {
-            //Only calculate with best Moves from Oponent
-            if ((b.activePlayer != Color::WHITE && b.gameValue >= 0) || (b.activePlayer != Color::BLACK && b.gameValue <= 0)) {
-                //KI Moves
-                int temp = calculate(b, false, depth+1);
-                if (temp != 1) {
-                    results.push_back(temp);
-                }
-            }
-        }
+    if (boards.size() == 0) {
+        return board.activePlayer == Color::BLACK ? std::numeric_limits<int>::min() : std::numeric_limits<int>::max();
     }
-    else {
-        for (ChessBoard &b : boards) {
-            //Oponent Moves
-            int temp = calculate(b, true, depth+1);
-            if (temp != 1) {
-                results.push_back(temp);
-            }
-        }
-    }
-    if (results.size() > 0) {
-        // calculate best move for KI (also mind the best Move for Oponent!)
+    //Alpha Beta Pruning
+    Value v;
+    v.highest = board.activePlayer == Color::BLACK ? beta : alpha;
+    for (ChessBoard &b : boards) {
+        int temp = calculate(b, !oponent, depth+1, board.activePlayer == Color::BLACK ? alpha : v.highest, board.activePlayer == Color::WHITE ? beta : v.lowest);
         if (board.activePlayer == Color::BLACK) {
-            return getLowest(std::move(results));
+            if (temp < v.lowest || v.lowest == 1) {
+                v.lowest = temp;
+                if (v.lowest <= alpha) {
+                    break;
+                }
+            }
         }
         else {
-            return getHighest(std::move(results));
+            if (temp > v.highest || v.highest == 1) {
+                v.highest = temp;
+                if (v.highest >= beta) {
+                    break;
+                }
+            }
         }
     }
-    else {
-        return evaluate_board(&board);
-    }
+    return v.highest;
 }

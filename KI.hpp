@@ -17,9 +17,5 @@ class RatedMove
 };
 
 Move getNextMove(ChessBoard *board);
-int calculate(ChessBoard&, bool opent, int);
-int getLowest(std::vector<int>);
-int getHighest(std::vector<int>);
-int getAverage(std::vector<int>);
 
 #endif
