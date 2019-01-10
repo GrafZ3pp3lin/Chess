@@ -1,7 +1,6 @@
 #include "Evaluation.hpp"
 #include "MoveGenerator.hpp"
 #include "KI.hpp"
-#include <iostream>
 #include <future>
 #include <limits>
 
@@ -35,16 +34,6 @@ int getAverage(std::vector<int> values) {
     return avg / values.size();
 }
 
-//TEMP
-const char* temp(int8_t index)
-{
-    char* square = new char[3];
-    square[0] = (char)((index % 10) + 64);
-    square[1] = (char)(10 - (index / 10) + 48);
-    square[2] = '\0';
-    return square;
-}
-
 int calculate(ChessBoard &board, bool oponent, int depth, int alpha, int beta);
 
 RatedMove startCalculateMove(Move m, ChessBoard *board) {
@@ -71,7 +60,7 @@ Move getNextMove(ChessBoard *board) {
     Value v;
     v.highest = 1;
     for (RatedMove &r : moves) {
-        std::cout << "Move: from " << temp(r.move.from) << " to " << temp(r.move.to) << " has value of " << r.value << std::endl;
+        //DEBUG std::cout << "Move: from " << temp(r.move.from) << " to " << temp(r.move.to) << " has value of " << r.value << std::endl;
         if (board->activePlayer == Color::WHITE) {
             if (r.value != 1 && (r.value > v.highest || v.highest == 1)) {
                 v.highest = r.value;
@@ -109,9 +98,10 @@ int calculate(ChessBoard &board, bool oponent, int depth, int alpha, int beta) {
             boards.push_back(boardCopy);
         }
     }
-    if (boards.size() == 0) {
+    //Testing...
+    /*if (boards.size() == 0) {
         return board.activePlayer == Color::BLACK ? std::numeric_limits<int>::min() : std::numeric_limits<int>::max();
-    }
+    }*/
     //Alpha Beta Pruning
     Value v;
     v.highest = board.activePlayer == Color::BLACK ? beta : alpha;
