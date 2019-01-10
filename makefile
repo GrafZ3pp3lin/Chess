@@ -1,4 +1,4 @@
-all: MoveGenerator.o Player.o Evaluation.o
+all: MoveGenerator.o Player.o Evaluation.o KI.o
 	g++ -g -o main.exe main.cpp MoveGenerator.o Player.o Evaluation.o KI.o
 
 MoveGenerator.o: MoveGenerator.hpp MoveGenerator.cpp

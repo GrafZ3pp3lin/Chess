@@ -74,7 +74,7 @@ Move getNextMove(ChessBoard *board) {
     Value v;
     v.highest = 1;
     for (RatedMove &r : moves) {
-        //DEBUG std::cout << "Move: from " << temp(r.move.from) << " to " << temp(r.move.to) << " has value of " << r.value << std::endl;
+        std::cout << "Move: from " << temp(r.move.from) << " to " << temp(r.move.to) << " has value of " << r.value << std::endl;
         if (board->activePlayer == Color::WHITE) {
             if (r.value != 1 && (r.value > v.highest || v.highest == 1)) {
                 v.highest = r.value;
