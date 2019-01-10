@@ -1,10 +1,13 @@
 #include "Evaluation.hpp"
 #include "MoveGenerator.hpp"
 #include "KI.hpp"
+#include <iostream>
 #include <future>
 #include <limits>
+#include <mutex>
 
 int MAX_DEPTH = 5;
+std::mutex mu;
 
 int getLowest(std::vector<int> values) {
     int lowest = values[0];
@@ -33,6 +36,17 @@ int getAverage(std::vector<int> values) {
     }
     return avg / values.size();
 }
+
+//------------------------------------DEBUG------------------------------------------------
+const char* temp(int8_t index)
+{
+    char* square = new char[3];
+    square[0] = (char)((index % 10) + 64);
+    square[1] = (char)(10 - (index / 10) + 48);
+    square[2] = '\0';
+    return square;
+}
+//------------------------------------DEBUG------------------------------------------------
 
 int calculate(ChessBoard &board, bool oponent, int depth, int alpha, int beta);
 
@@ -89,7 +103,6 @@ int calculate(ChessBoard &board, bool oponent, int depth, int alpha, int beta) {
     }
     std::vector<Move> moveset = board.get_moveset_all(board.activePlayer);
     std::vector<ChessBoard> boards;
-    std::vector<int> results;
     for (Move m : moveset) {
         if (board.is_legal(m, board.activePlayer)) {
             ChessBoard boardCopy{board};
@@ -98,10 +111,6 @@ int calculate(ChessBoard &board, bool oponent, int depth, int alpha, int beta) {
             boards.push_back(boardCopy);
         }
     }
-    //Testing...
-    /*if (boards.size() == 0) {
-        return board.activePlayer == Color::BLACK ? std::numeric_limits<int>::min() : std::numeric_limits<int>::max();
-    }*/
     //Alpha Beta Pruning
     Value v;
     v.highest = board.activePlayer == Color::BLACK ? beta : alpha;
