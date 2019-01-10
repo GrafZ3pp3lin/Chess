@@ -38,8 +38,8 @@ int main(int argc, char const *argv[])
             std::cout << " < AI calculates Move..." << std::endl;
 
             Move ai_move = getNextMove(chessBoard);
-            chessBoard->move_piece(ai_move);
             std::cout << " < AI move: " << index_to_square(ai_move.from) << " -> " << index_to_square(ai_move.to) << std::endl;
+            chessBoard->move_piece(ai_move);
             chessBoard->activePlayer = Color::WHITE;
         }
         else{

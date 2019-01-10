@@ -80,7 +80,7 @@ Move get_move_of_player(ChessBoard *board)
         std::cout << "   [" << i << "] " << index_to_square(moveset[i].to) << std::endl;
     }
     int selected_move = -1;
-    while (selected_move < 0 && selected_move >= moveset.size())
+    while (selected_move < 0 || selected_move >= moveset.size())
     {
         std::cout << " > select a move: ";
         std::cin >> selected_move;
