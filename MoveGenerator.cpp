@@ -6,6 +6,7 @@
 #include <limits>
 
 char transfer(int);
+int8_t transfer_back(char);
 
 char* ChessBoard::index_to_piece(uint8_t index)
 {
@@ -63,7 +64,7 @@ std::string ChessBoard::convert_to_FEN()
         fen += " w ";
     }
 
-    //rochade
+    //castling
     bool nocastling = true;
 
     if(white_castling_kingside){
@@ -86,7 +87,7 @@ std::string ChessBoard::convert_to_FEN()
         fen += "-";
     }
 
-    //en Passant
+    //enPassant
     if(enPassant < 99 && enPassant > 21){
         std::string field(index_to_square(enPassant));
         fen += " " + field;
@@ -98,13 +99,121 @@ std::string ChessBoard::convert_to_FEN()
     //Züge
     fen += " " + (moveCounter+48);
 
-    //std::cout << fen << std::endl;
-
     return fen;
 }
 
-bool load_from_FEN(std::string fen)
+bool ChessBoard::load_from_FEN(char *fen)
 {
+    //init empty board
+    for(int i = 21; i < 99; i++){
+        board[i] = i % 10 == 0 || i % 10 == 9 ? -1 : 0;
+    }
+
+    //piece positions
+    int next = 0;
+    int index = 21;
+    for(int i = 0; i < fen[i] != '\0'; i++){
+        char c = fen[i];
+        if (c > 65 && c < 90 || c > 97 && c < 122){
+            board[index] = transfer_back(c);
+            index++;
+        }  
+        else if (c > 48 && c < 57){
+            index += c - 48;
+        }
+        else if(c = 47){
+            index += 2;
+        }
+        else if(c == 32){
+            next = i-1;
+            std::cout << next << " ";
+            break;
+        }
+        else{
+            return false;
+        }
+    }
+
+    for(next = 0; fen[next] != 32; next++);
+
+    if(fen[next] != 32){
+        return false;
+    }
+    next++;
+
+    //active Player
+    if(fen[next] == 'w' || fen[next] == 'W'){
+        activePlayer = Color::WHITE;
+    }
+    else if(fen[next] == 'b' || fen[next] == 'B'){
+        activePlayer = Color::BLACK;
+    }
+    else{
+        return false;
+    }
+    next++;
+
+    if(fen[next] != 32){
+        return false;
+    }
+    next++;
+
+    //Castling
+    black_castling_kingside = false;
+    black_castling_queenside = false;
+    white_castling_kingside = false;
+    white_castling_queenside = false;
+  
+    if(fen[next] == 'K'){
+        black_castling_kingside = true;
+        next++;
+    }
+    if(fen[next] == 'Q'){
+        black_castling_queenside = true;
+        next++;
+    }
+    if(fen[next] == 'k'){
+        white_castling_kingside = true;
+        next++;
+    }
+    if(fen[next] == 'q'){
+        white_castling_queenside = true;
+        next++;
+    }
+
+    if(fen[next] != 32){
+        return false;
+    }
+    next++;
+
+//hier ist noch was kaputt
+
+    /*
+    //enPassant
+    if((fen[next] > 64 && fen[next] < 73 || fen[next] > 96 && fen[next] < 105) && fen[next+1] > 48 && fen[next+1] < 57){
+        char sq[2] =  {fen[next],fen[next+1]};
+        enPassant = square_to_index(sq);
+        next += 2;
+    }
+    else if(fen[next] = '-'){
+        enPassant = 0;
+    }
+    else{
+        return false;
+    }
+    std::cout << fen[next] << "a";
+
+    //Züge
+    if(fen[next] != 32){
+        return false;
+    }
+    next++;
+    // hier fehlt noch was
+
+    std::cout << "end";
+    */
+
+   
     return true;
 }
 
@@ -172,6 +281,26 @@ char transfer(int id)
         case 10: return 'K';
         case 20: return 'k';
         default: return ' ';
+    }
+}
+
+int8_t transfer_back(char piece)
+{
+    switch(piece) 
+    {
+        case 'P': return 1;
+        case 'p': return 2;
+        case 'R': return 11;
+        case 'r': return 21;
+        case 'N': return 12;
+        case 'n': return 22;
+        case 'B': return 13;
+        case 'b': return 23;
+        case 'Q': return 14;
+        case 'q': return 24;
+        case 'K': return 10;
+        case 'k': return 20;
+        default: return 0;
     }
 }
 
