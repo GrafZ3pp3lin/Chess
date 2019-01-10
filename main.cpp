@@ -23,7 +23,7 @@ int main(int argc, char const *argv[])
         //chessBoard->load_from_FEN("8/8/5k1K/8/8/8/8/6q1 b - - 0 1");
         //chessBoard->singleplayergame = true;
         //7R/8/8/8/5K1k/8/8/8 b - - 0 1
-        //std::cout << chessBoard->load_from_FEN("7K/8/k1P5/7p/8/8/8/8 w KQkq - 0 1") << std::endl; // so könnte momentan ein Spiel in FEN-Notation geladen werden
+        //std::cout << chessBoard->load_from_FEN((char*)"7K/8/k1P5/7p/8/8/8/8 w KQkq - 0 1") << std::endl; // so könnte momentan ein Spiel in FEN-Notation geladen werden
     }
 
     // AI with random move selection
