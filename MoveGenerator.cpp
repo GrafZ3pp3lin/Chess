@@ -117,8 +117,16 @@ std::string ChessBoard::convert_to_FEN()
 bool ChessBoard::load_from_FEN(char *fen)
 {
     //init empty board
-    for(int i = 21; i < 99; i++){
-        board[i] = i % 10 == 0 || i % 10 == 9 ? -1 : 0;
+    for(int i = 0; i < 120; i++)
+    {
+        if (i < 21 || i > 98 || i % 10 == 0 || i % 10 == 9)
+        {
+            board[i] = -1;
+        }
+        else
+        {
+            board[i] = 0;
+        }
     }
 
     //piece positions
