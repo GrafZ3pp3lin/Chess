@@ -903,13 +903,10 @@ uint8_t ChessBoard::is_king_in_check(uint8_t i, Color color)
     }
     // other king: check all squares in a distance of 2
     int k = color == Color::WHITE ? 20 : 10;
-    if (board[i + 20] == k || board[i - 20] == k
-    || board[i + 21] == k || board[i - 21] == k
-    || board[i + 22] == k || board[i - 22] == k
-    || board[i + 12] == k || board[i - 12] == k
-    || board[i + 2] == k || board[i - 2] == k
-    || board[i + 19] == k || board[i - 19] == k
-    || board[i + 18] == k || board[i - 18] == k)
+    if (board[i + 10] == k || board[i - 10] == k
+    || board[i + 11] == k || board[i - 11] == k
+    || board[i + 1] == k || board[i - 1] == k
+    || board[i + 9] == k || board[i - 9] == k)
     {
         checkCount++;
     }
