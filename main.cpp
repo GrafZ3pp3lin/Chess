@@ -19,7 +19,7 @@ int main(int argc, char const *argv[])
     std::cout << std::endl << std::endl;                                                   
     std::cout << "At first are some helpful information.\nYou can Play with another person in multiplayer or you can try to beat our AI (you will loose :) )" << std::endl;
     std::cout << "If you want you can load a game by entering it in FEN-notation (input directly or path to FEN-file)" << std::endl << std::endl;
-    
+    std::cout << "You can quit the game by typing in \"q\", now you can choose to save or quit the game" << std::endl;
     
     std::string in;
 
@@ -35,7 +35,7 @@ int main(int argc, char const *argv[])
         std::cout << "you are now playing in multiplayermode" << std::endl;
     }
     else{
-        std::cout << "you are now playing in singleplayermode" << std::endl;
+        std::cout << "you are now playing in singleplayermode" << std::endl << std::endl;
     }
 
     std::cout << " > To load an existing game type in [l] else press enter" << std::endl;
@@ -45,8 +45,9 @@ int main(int argc, char const *argv[])
         std::cout << " > Please type in path or FEN-notation"  << std::endl;
         std::string path;
         std::cin >> path;
-        if(!chessBoard->load_from_FEN(load(path.c_str())));
-        else if(!chessBoard->load_from_FEN(path.c_str()));
+        
+        if(!chessBoard->load_from_FEN(path.c_str())) { std::cout << "ja"; }
+        else if(!chessBoard->load_from_FEN(load(path.c_str())));
         else{
             std::cout << "No valid Chess-game, you start now with a normal game " << std::endl;
             chessBoard->init();
@@ -94,7 +95,7 @@ int main(int argc, char const *argv[])
 void save(std::string filename) {
     std::ofstream myfile;
     myfile.open (filename);
-    //myfile.write( chessBoard->convert_to_FEN().c_str());
+    myfile.write( chessBoard->convert_to_FEN().c_str());
     myfile.close();
 }
 
