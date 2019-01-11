@@ -9,6 +9,6 @@
 
 
 void save(std::string);
-ChessBoard* load(std::string);
+const char* load(std::string);
 
 #endif

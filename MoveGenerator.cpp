@@ -114,7 +114,7 @@ std::string ChessBoard::convert_to_FEN()
     return fen;
 }
 
-bool ChessBoard::load_from_FEN(char *fen)
+bool ChessBoard::load_from_FEN(const char *fen)
 {
     //init empty board
     for(int i = 0; i < 120; i++)
@@ -264,9 +264,8 @@ bool ChessBoard::load_from_FEN(char *fen)
 }
 
 
-void ChessBoard::init(bool single)
+void ChessBoard::init()
 {
-    singleplayergame = single;
     // off the board
     for (uint8_t i = 0; i < 120; i++)
     {

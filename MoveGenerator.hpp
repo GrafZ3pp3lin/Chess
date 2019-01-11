@@ -48,11 +48,10 @@ class ChessBoard
 {
     public:
         int8_t board[120];
-        bool singleplayergame;
         Color activePlayer;
         uint8_t endOfGame = 0; // 0: running, 1: checkmate - white wins, 2: checkmate - black wins, 3: draw
         int gameValue = 0;
-        void init(bool);
+        void init();
         void end_game();
         void print();
         void print_moveset();
@@ -64,7 +63,7 @@ class ChessBoard
         std::vector<Move> get_moveset_all(Color color);
         std::vector<Move> get_legal_moveset(uint8_t index, Piece type);
         std::string convert_to_FEN();
-        bool load_from_FEN(char*);
+        bool load_from_FEN(const char*);
         uint8_t is_king_in_check(uint8_t index, Color color);
     private:
         uint8_t moveCounter = 0;
