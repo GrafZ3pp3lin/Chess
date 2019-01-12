@@ -17,7 +17,7 @@ int main(int argc, char const *argv[])
     std::cout <<" `Y8bood8P'  o888o o888o `Y8bod8P' `Y8888P' `Y8888P'      o88o     o8888o o888o"  << std::endl;
     
     std::cout << std::endl << std::endl;                                                   
-    std::cout << "At first are some helpful information.\nYou can Play with another person in multiplayer or you can try to beat our AI (you will loose :) )" << std::endl;
+    std::cout << "At first here are some helpful information.\nYou can play with another person in multiplayer or you can try to beat our AI (you will loose :) )" << std::endl;
     std::cout << "If you want you can load a game by entering it in FEN-notation (input directly or path to FEN-file)" << std::endl << std::endl;
     std::cout << "You can quit the game by typing in \"q\", now you can choose to save or quit the game" << std::endl;
     
@@ -26,6 +26,7 @@ int main(int argc, char const *argv[])
     ChessBoard* chessBoard;
     chessBoard = new ChessBoard{};
     chessBoard->init();
+    setDifficulty(Difficulty::HARD);
 
     std::cout << " > If you want to play a multiplayergame type in [m] else press enter" << std::endl;
     std::getline(std::cin, in);
@@ -49,7 +50,7 @@ int main(int argc, char const *argv[])
         if(!chessBoard->load_from_FEN(path.c_str())) { std::cout << "ja"; }
         else if(!chessBoard->load_from_FEN(load(path.c_str())));
         else{
-            std::cout << "No valid Chess-game, you start now with a normal game " << std::endl;
+            std::cout << "No valid Chess-game, you will start with a normal game " << std::endl;
             chessBoard->init();
         }
     }
@@ -78,7 +79,7 @@ int main(int argc, char const *argv[])
             chessBoard->print();
             std::cout << " < AI calculates Move..." << std::endl;
 
-            Move ai_move = getNextMove(chessBoard);
+            Move ai_move = getNextAIMove(chessBoard);
             std::cout << " < AI move: " << index_to_square(ai_move.from) << " -> " << index_to_square(ai_move.to) << std::endl;
             chessBoard->move_piece(ai_move);
         }
@@ -95,7 +96,7 @@ int main(int argc, char const *argv[])
 void save(std::string filename) {
     std::ofstream myfile;
     myfile.open (filename);
-    myfile.write( chessBoard->convert_to_FEN().c_str());
+    //myfile.write( chessBoard->convert_to_FEN().c_str());
     myfile.close();
 }
 
