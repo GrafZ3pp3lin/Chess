@@ -43,12 +43,11 @@ void save(std::string filename)
     myfile.close();
 }
 
-ChessBoard* load(std::string filename)
-{
+const char* load(std::string filename){
     std::ifstream infile;
 	infile.open( filename );
     std::string line;
     std::getline(infile, line);
     infile.close();
-    return nullptr;
+    return line.c_str();
 }

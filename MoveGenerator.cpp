@@ -940,6 +940,33 @@ bool ChessBoard::is_legal(Move m, Color color)
     return true;
 }
 
+bool ChessBoard::is_move_possible() {
+    std::vector<Move> moveset = get_moveset_all(activePlayer);
+    for (Move m : moveset) {
+        if (is_legal(m, activePlayer)) {
+            return true;
+        }
+    }
+    int8_t king = activePlayer == Color::WHITE ? 10 : 20;
+    uint8_t kingPos;
+    // get position of king
+    for (uint8_t i = 21; i < 99; i++)
+    {
+        if (board[i] == king)
+        {
+            kingPos = i;
+            break;
+        }
+    }
+    if (is_king_in_check(kingPos, activePlayer)) {
+        endOfGame = activePlayer == Color::WHITE ? 2 : 1;
+    }
+    else {
+        endOfGame = 3;
+    }
+    return false;
+}
+
 void ChessBoard::move_piece(Move m)
 {
     move_piece(m, false);
