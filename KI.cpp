@@ -53,7 +53,7 @@ Move getNextAIMove(ChessBoard *board) {
     //Eröffnungen
     Move m = Move{(uint8_t) 0,(uint8_t)0};
     if(board->moveCounter < 3 && std::find(moveset.begin(), moveset.end(), (m = opening_move(board))) != moveset.end() && board->is_legal(m, board->activePlayer)){
-        std::cout << "Databasemove from " << convert(m.from) << " to " << convert(m.from) << std::endl;
+        std::cout << "Databasemove from " << convert(m.from) << " to " << convert(m.to) << std::endl;
         return m;
     }
 

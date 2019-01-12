@@ -41,7 +41,7 @@ std::string ChessBoard::convert_to_FEN()
             if(board[i] > 0){
                 if(jumped_fields > 0)
                 {
-                    fen += jumped_fields;
+                    fen += (jumped_fields+48);
                     jumped_fields = 0;
                 }
                 fen += transfer(board[i]);
@@ -110,7 +110,7 @@ std::string ChessBoard::convert_to_FEN()
     }
 
     //Züge
-    fen += " " + std::to_string(moveCounter + 48) + " -";
+    fen += " " + std::to_string(moveCounter) + " -";
     return fen;
 }
 

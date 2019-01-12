@@ -1,9 +1,11 @@
 #include "main.hpp"
 #include "KI.hpp"
 #include <string>
+#include <cstring>
 #include "MoveGenerator.hpp"
 
 bool multiplayermode = false;
+ChessBoard* chessBoard;
 
 int main(int argc, char const *argv[])
 {
@@ -23,7 +25,6 @@ int main(int argc, char const *argv[])
     
     std::string in;
 
-    ChessBoard* chessBoard;
     chessBoard = new ChessBoard{};
     chessBoard->init();
     setDifficulty(Difficulty::NORMAL);
@@ -104,7 +105,10 @@ int main(int argc, char const *argv[])
 void save(std::string filename) {
     std::ofstream myfile;
     myfile.open (filename);
-    //myfile.write( chessBoard->convert_to_FEN().c_str());
+    char* fen = (char*) chessBoard->convert_to_FEN().c_str();
+    myfile.write( fen, strlen(fen));
+    std::cout << (int)length << std::endl;
+    std::cout << chessBoard->convert_to_FEN() << std::endl;
     myfile.close();
 }
 
