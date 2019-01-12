@@ -74,6 +74,7 @@ int main(int argc, char const *argv[])
             chessBoard->move_piece(player_move);
         }
         else{
+            add_opening_move(player_move, chessBoard->moveCounter);
             //AI
             chessBoard->print();
             std::cout << " < AI calculates Move..." << std::endl;
@@ -81,6 +82,7 @@ int main(int argc, char const *argv[])
             Move ai_move = getNextMove(chessBoard);
             std::cout << " < AI move: " << index_to_square(ai_move.from) << " -> " << index_to_square(ai_move.to) << std::endl;
             chessBoard->move_piece(ai_move);
+            add_opening_move(ai_move, chessBoard->moveCounter);
         }
         chessBoard->activePlayer = !chessBoard->activePlayer;
     }
@@ -95,7 +97,7 @@ int main(int argc, char const *argv[])
 void save(std::string filename) {
     std::ofstream myfile;
     myfile.open (filename);
-    myfile.write( chessBoard->convert_to_FEN().c_str());
+    //myfile.write( chessBoard->convert_to_FEN().c_str());
     myfile.close();
 }
 

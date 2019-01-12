@@ -17,5 +17,7 @@ class RatedMove
 };
 
 Move getNextMove(ChessBoard *board);
+Move opening_move(ChessBoard *board);
+void add_opening_move(Move,int);
 
 #endif
