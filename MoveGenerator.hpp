@@ -38,8 +38,8 @@ class Move
 {
     public:
     Move(const char from[2], const char to[2]) { 
-        this->from = ((int)(from[1] - 48)) * 10 + ((int)(toupper(from[0])) - 64); 
-        this->to =  ((int)(to[1] - 48)) * 10 + ((int)(toupper(to[0])) - 64);  
+        this->from  =  (10 - (int)(from[1] - 48)) * 10 + ((int)(toupper(from[0])) - 64); 
+        this->to    =  (10 - (int)  (to[1] - 48)) * 10 + ((int)(toupper(  to[0])) - 64);  
     };
 
     Move(uint8_t from, uint8_t to) : from(from), to (to) { };

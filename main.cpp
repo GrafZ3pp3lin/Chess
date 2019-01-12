@@ -74,7 +74,7 @@ int main(int argc, char const *argv[])
             chessBoard->move_piece(player_move);
         }
         else{
-            add_opening_move(player_move, chessBoard->moveCounter);
+            add_opening_move(player_move, chessBoard->moveCounter-1);
             //AI
             chessBoard->print();
             std::cout << " < AI calculates Move..." << std::endl;

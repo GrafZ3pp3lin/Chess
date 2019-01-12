@@ -53,8 +53,11 @@ Move getNextAIMove(ChessBoard *board) {
     //Eröffnungen
     Move m = Move{(uint8_t) 0,(uint8_t)0};
     if(board->moveCounter < 3 && std::find(moveset.begin(), moveset.end(), (m = opening_move(board))) != moveset.end() && board->is_legal(m, board->activePlayer)){
+        std::cout << "from opening Database" << std::endl;
         return m;
     }
+
+    std::cout << "Databasemove from " << convert(m.from) << " to " << convert(m.from) << std::endl;
 
     std::vector<std::future<RatedMove>> futures;
     std::vector<RatedMove> moves;
@@ -186,6 +189,7 @@ Move opening_move(ChessBoard *board){
                 possible.push_back(Move{"e7", "e6"});
                 possible.push_back(Move{"e7", "e5"});
                 possible.push_back(Move{"c7", "c5"});
+                std::cout << "reached" << std::endl;
             }
             else if(opening[0] == "d4"){
                 possible.push_back(Move{"g8", "f6"});
