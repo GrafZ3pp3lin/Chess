@@ -79,7 +79,7 @@ int main(int argc, char const *argv[])
             chessBoard->print();
             std::cout << " < AI calculates Move..." << std::endl;
 
-            Move ai_move = getNextMove(chessBoard);
+            Move ai_move = getNextAIMove(chessBoard);
             std::cout << " < AI move: " << index_to_square(ai_move.from) << " -> " << index_to_square(ai_move.to) << std::endl;
             chessBoard->move_piece(ai_move);
             add_opening_move(ai_move, chessBoard->moveCounter);

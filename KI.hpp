@@ -8,6 +8,13 @@ union Value {
     int lowest;
 };
 
+enum class Difficulty
+{
+    EASY,
+    NORMAL,
+    HARD
+};
+
 class RatedMove
 {
     public:
@@ -16,7 +23,8 @@ class RatedMove
     int value = 0;
 };
 
-Move getNextMove(ChessBoard *board);
+Move getNextAIMove(ChessBoard *board);
+void setDifficulty(Difficulty dif);
 Move opening_move(ChessBoard *board);
 void add_opening_move(Move,int);
 

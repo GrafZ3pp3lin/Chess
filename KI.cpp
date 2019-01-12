@@ -8,40 +8,33 @@
 #include <ctime>
 #include <algorithm>
 
-int MAX_DEPTH = 5;
-std::mutex mu;
+int MAX_DEPTH = 4;
+int gameValueOffset = 75;
+bool useDirectestCheckMate = true;
 std::vector<Move> opening;
 
-int getLowest(std::vector<int> values) {
-    int lowest = values[0];
-    for (int value : values) {
-        if (lowest > value) {
-            lowest = value;
-        }
+void setDifficulty(Difficulty dif) {
+    switch (dif) 
+    {
+        case Difficulty::EASY:
+            MAX_DEPTH = 3;
+            gameValueOffset = 150;
+            useDirectestCheckMate = false;
+            break;
+        case Difficulty::HARD:
+            MAX_DEPTH = 5;
+            gameValueOffset = 10;
+            useDirectestCheckMate = true;
+            break;
+        default:
+            MAX_DEPTH = 4;
+            gameValueOffset = 75;
+            useDirectestCheckMate = true;
     }
-    return lowest;
-}
-
-int getHighest(std::vector<int> values) {
-    int highest = values[0];
-    for (int value : values) {
-        if (highest < value) {
-            highest = value;
-        }
-    }
-    return highest;
-}
-
-int getAverage(std::vector<int> values) {
-    int avg = 0;
-    for (int value : values) {
-        avg += value;
-    }
-    return avg / values.size();
 }
 
 //------------------------------------DEBUG------------------------------------------------
-const char* temp(int8_t index)
+const char* convert(int8_t index)
 {
     char* square = new char[3];
     square[0] = (char)((index % 10) + 64);
@@ -52,15 +45,9 @@ const char* temp(int8_t index)
 //------------------------------------DEBUG------------------------------------------------
 
 int calculate(ChessBoard &board, bool oponent, int depth, int alpha, int beta);
+RatedMove startCalculateMove(Move m, ChessBoard *board);
 
-RatedMove startCalculateMove(Move m, ChessBoard *board) {
-    ChessBoard boardCopy{*board};
-    boardCopy.move_piece(m, true);
-    boardCopy.activePlayer = !boardCopy.activePlayer;
-    return RatedMove {m, calculate(boardCopy, true, 1, std::numeric_limits<int>::min(), std::numeric_limits<int>::max())};
-}
-
-Move getNextMove(ChessBoard *board) {
+Move getNextAIMove(ChessBoard *board) {
     std::vector<Move> moveset = board->get_moveset_all(board->activePlayer);
     
     //Eröffnungen
@@ -74,17 +61,31 @@ Move getNextMove(ChessBoard *board) {
     int index;
     for (int i = 0; i < moveset.size(); i++) {
         if (board->is_legal(moveset[i], board->activePlayer)) {
+            //start for each possible Move one Thread
             futures.push_back(std::async(std::launch::async, &startCalculateMove, moveset[i], board));
         }
     }
-    for (int i = 0; i < futures.size(); i++) {
-        moves.push_back(futures[i].get());
-    }
-    std::vector<RatedMove> bestMoves;
     Value v;
     v.highest = 1;
-    for (RatedMove &r : moves) {
-        std::cout << "Move: from " << temp(r.move.from) << " to " << temp(r.move.to) << " has value of " << r.value << std::endl;
+    std::vector<RatedMove> bestMoves;
+    for (int i = 0; i < futures.size(); i++) {
+        auto temp = futures[i].get();
+        //DEBUG 
+        std::cout << "Move: from " << convert(temp.move.from) << " to " << convert(temp.move.to) << " has value of " << temp.value << std::endl;
+        if (board->activePlayer == Color::WHITE) {
+            if (temp.value != 1 && (temp.value > v.highest || v.highest == 1)) {
+                v.highest = temp.value;
+            }
+        }
+        else {
+            if (temp.value != 1 && (temp.value < v.lowest || v.lowest == 1)) {
+                v.lowest = temp.value;
+            }
+        }
+        moves.push_back(temp);
+    }
+    /*for (RatedMove &r : moves) {
+        //std::cout << "Move: from " << convert(temp.move.from) << " to " << convert(temp.move.to) << " has value of " << temp.value << std::endl;
         if (board->activePlayer == Color::WHITE) {
             if (r.value != 1 && (r.value > v.highest || v.highest == 1)) {
                 v.highest = r.value;
@@ -95,9 +96,10 @@ Move getNextMove(ChessBoard *board) {
                 v.lowest = r.value;
             }
         }
-    }
+    }*/
     for (RatedMove &r : moves) {
-        if (r.value == v.highest) {
+        if ((board->activePlayer == Color::BLACK && r.value <= (v.lowest + gameValueOffset))
+            || (board->activePlayer == Color::WHITE && r.value >= (v.highest - gameValueOffset))) {
             bestMoves.push_back(r);
         }
     }
@@ -107,6 +109,14 @@ Move getNextMove(ChessBoard *board) {
     return bestMoves[rand() % bestMoves.size()].move;
 }
 
+RatedMove startCalculateMove(Move m, ChessBoard *board) {
+    ChessBoard boardCopy{*board};
+    boardCopy.move_piece(m, true);
+    boardCopy.activePlayer = !boardCopy.activePlayer;
+    return RatedMove {m, calculate(boardCopy, true, 1, std::numeric_limits<int>::min(), std::numeric_limits<int>::max())};
+}
+
+//calculate Moves recursive 
 int calculate(ChessBoard &board, bool oponent, int depth, int alpha, int beta) {
     if (depth == MAX_DEPTH) {
         return evaluate_board(&board);
@@ -127,6 +137,9 @@ int calculate(ChessBoard &board, bool oponent, int depth, int alpha, int beta) {
     for (ChessBoard &b : boards) {
         int temp = calculate(b, !oponent, depth+1, board.activePlayer == Color::BLACK ? alpha : v.highest, board.activePlayer == Color::WHITE ? beta : v.lowest);
         if (board.activePlayer == Color::BLACK) {
+            if (useDirectestCheckMate && temp < -1000000) {
+                temp += 10000;
+            }
             if (temp < v.lowest || v.lowest == 1) {
                 v.lowest = temp;
                 if (v.lowest <= alpha) {
@@ -135,6 +148,9 @@ int calculate(ChessBoard &board, bool oponent, int depth, int alpha, int beta) {
             }
         }
         else {
+            if (useDirectestCheckMate && temp > 1000000) {
+                temp -= 10000;
+            }
             if (temp > v.highest || v.highest == 1) {
                 v.highest = temp;
                 if (v.highest >= beta) {
@@ -193,7 +209,7 @@ Move opening_move(ChessBoard *board){
                 possible.push_back(Move{"c2", "c4"});
                 possible.push_back(Move{"g1","f3"});
             }
-            
+
             else if(opening[0] == "f3" && opening[1] == "f6"){
                 possible.push_back(Move{"c2", "c4"});
                 possible.push_back(Move{"g2","g3"});
@@ -210,34 +226,34 @@ Move opening_move(ChessBoard *board){
                 possible.push_back(Move{"d7", "d5"});
             }
 
-            else if(opening[0] == "d4" && opening[1] == "f6" && opening[2] = "c4"){
+            else if(opening[0] == "d4" && (opening[1] == "f6") && (opening[2] == "c4")){
                 possible.push_back(Move{"e7", "e6"});
                 possible.push_back(Move{"g7", "g6"});
             }
-            else if(opening[0] == "d4" && opening[1] == "d5" && opening[2] = "c4"){
+            else if(opening[0] == "d4" && (opening[1] == "d5") && (opening[2] == "c4")){
                 possible.push_back(Move{"c7", "c6"});
                 possible.push_back(Move{"e7", "e6"});
             }
-            else if(opening[0] == "d4" && opening[1] == "f6" && opening[2] = "f3"){
+            else if(opening[0] == "d4" && (opening[1] == "f6") && (opening[2] == "f3")){
                 possible.push_back(Move{"d7", "d5"});
                 possible.push_back(Move{"g7", "g6"});
                 possible.push_back(Move{"e7", "e6"});
             }
-            else if(opening[0] == "d4" && opening[1] == "d5" && opening[2] = "f3"){
+            else if(opening[0] == "d4" && (opening[1] == "d5") && (opening[2] == "f3")){
                 possible.push_back(Move{"g8", "f6"});
             }
 
-            else if(opening[0] == "f3" && opening[1] == "f6" && opening[2] = "c4"){
+            else if(opening[0] == "f3" && (opening[1] == "f6") && (opening[2] == "c4")){
                 possible.push_back(Move{"g7", "g6"});
                 possible.push_back(Move{"e7", "e6"});
                 possible.push_back(Move{"c7", "c5"});
             }
-             else if(opening[0] == "f3" && opening[1] == "f6" && opening[2] = "d4"){
+            else if(opening[0] == "f3" && (opening[1] == "f6") && (opening[2] == "d4")){
                 possible.push_back(Move{"g7", "g6"});
                 possible.push_back(Move{"e7", "e6"});
                 possible.push_back(Move{"d7", "d5"});
             }
-             else if(opening[0] == "f3" && opening[1] == "f6" && opening[2] = "g3"){
+            else if(opening[0] == "f3" && (opening[1] == "f6") && (opening[2] == "g3")){
                 
                 possible.push_back(Move{"g7", "g6"});
                 possible.push_back(Move{"d7", "d5"});
