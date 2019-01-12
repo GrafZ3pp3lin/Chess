@@ -722,13 +722,16 @@ std::vector<Move> ChessBoard::get_moveset_pawn(uint8_t i, Color color)
         }
     }
     // two squares forward
-    if (color == Color::WHITE && i > 80
-    || color == Color::BLACK && i < 39)
+    if (moveset.size() > 0)
     {
-        j = i + direction * 20;
-        if (board[j] == 0)
+        if (color == Color::WHITE && i > 80
+        || color == Color::BLACK && i < 39)
         {
-            moveset.push_back(Move{i, j, 2});
+            j = i + direction * 20;
+            if (board[j] == 0)
+            {
+                moveset.push_back(Move{i, j, 2});
+            }
         }
     }
     // forward right
