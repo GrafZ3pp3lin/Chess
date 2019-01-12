@@ -8,7 +8,7 @@ int main(int argc, char const *argv[])
 {
     ChessBoard* chessBoard;
     chessBoard = new ChessBoard{};
-    chessBoard->load_from_FEN((char*)"8/8/5k1K/8/8/8/8/6q1 b - - 0 1");
+    chessBoard->load_from_FEN((char*)"8/8/5K1k/8/8/8/8/7Q b - - 0 1");
     chessBoard->activePlayer = Color::BLACK;
     setDifficulty(Difficulty::EASY);
 

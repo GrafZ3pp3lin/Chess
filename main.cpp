@@ -26,7 +26,7 @@ int main(int argc, char const *argv[])
     ChessBoard* chessBoard;
     chessBoard = new ChessBoard{};
     chessBoard->init();
-    setDifficulty(Difficulty::HARD);
+    setDifficulty(Difficulty::NORMAL);
 
     std::cout << " > If you want to play a multiplayergame type in [m] else press enter" << std::endl;
     std::getline(std::cin, in);
