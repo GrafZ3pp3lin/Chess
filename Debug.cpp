@@ -7,10 +7,7 @@ int main(int argc, char const *argv[])
 {
     ChessBoard* chessBoard;
     chessBoard = new ChessBoard{};
-    chessBoard->init(true);
-    chessBoard->load_from_FEN((char*)"8/8/5k1K/8/8/8/8/6q1 b - - 0 1");
-    chessBoard->singleplayergame = true;
-    chessBoard->print();
+    chessBoard->load_from_FEN((char*)"8/8/5K1k/8/8/8/8/7Q b - - 0 1");
     chessBoard->activePlayer = Color::BLACK;
 
     std::vector<Move> moveset = chessBoard->get_moveset_all(chessBoard->activePlayer);

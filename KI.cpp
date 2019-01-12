@@ -72,8 +72,7 @@ Move getNextAIMove(ChessBoard *board) {
     std::vector<RatedMove> bestMoves;
     for (int i = 0; i < futures.size(); i++) {
         auto temp = futures[i].get();
-        //DEBUG 
-        std::cout << "Move: from " << convert(temp.move.from) << " to " << convert(temp.move.to) << " has value of " << temp.value << std::endl;
+        //DEBUG std::cout << "Move: from " << convert(temp.move.from) << " to " << convert(temp.move.to) << " has value of " << temp.value << std::endl;
         if (board->activePlayer == Color::WHITE) {
             if (temp.value != 1 && (temp.value > v.highest || v.highest == 1)) {
                 v.highest = temp.value;
@@ -86,19 +85,6 @@ Move getNextAIMove(ChessBoard *board) {
         }
         moves.push_back(temp);
     }
-    /*for (RatedMove &r : moves) {
-        //std::cout << "Move: from " << convert(temp.move.from) << " to " << convert(temp.move.to) << " has value of " << temp.value << std::endl;
-        if (board->activePlayer == Color::WHITE) {
-            if (r.value != 1 && (r.value > v.highest || v.highest == 1)) {
-                v.highest = r.value;
-            }
-        }
-        else {
-            if (r.value != 1 && (r.value < v.lowest || v.lowest == 1)) {
-                v.lowest = r.value;
-            }
-        }
-    }*/
     for (RatedMove &r : moves) {
         if ((board->activePlayer == Color::BLACK && r.value <= (v.lowest + gameValueOffset))
             || (board->activePlayer == Color::WHITE && r.value >= (v.highest - gameValueOffset))) {
@@ -106,6 +92,7 @@ Move getNextAIMove(ChessBoard *board) {
         }
     }
     if (bestMoves.size() == 0) {
+        //KI is in CheckMate
         throw std::runtime_error("NoPossibleMoveError");
     }
     return bestMoves[rand() % bestMoves.size()].move;
