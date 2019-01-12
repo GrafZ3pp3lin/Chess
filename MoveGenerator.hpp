@@ -82,6 +82,7 @@ class ChessBoard
         void move_piece(Move m, bool aiMove);
         void move_piece(Move m, bool ingoreFlag, bool aiMove);
         bool is_legal(Move m, Color color);
+        bool is_move_possible();
         std::vector<Move> get_moveset_all(Color color);
         std::vector<Move> get_legal_moveset(uint8_t index, Piece type);
         std::string convert_to_FEN();

@@ -59,6 +59,9 @@ int main(int argc, char const *argv[])
     // AI with random move selection
     while (!chessBoard->endOfGame)
     {
+        if (!chessBoard->is_move_possible()) {
+            break; //continue?
+        }
         std::cout << std::endl << "*******************************************************************" << std::endl;
         if(multiplayermode){
             std::cout << "Player 1 is on the line:" << std::endl;
@@ -67,6 +70,9 @@ int main(int argc, char const *argv[])
         Move player_move = get_move_of_player(chessBoard);
         chessBoard->move_piece(player_move, false);
         chessBoard->activePlayer = !chessBoard->activePlayer;
+        if (!chessBoard->is_move_possible()) {
+            break; //continue?
+        }
         std::cout << std::endl << "*******************************************************************" << std::endl;
             //multiplayer
         if(multiplayermode){
