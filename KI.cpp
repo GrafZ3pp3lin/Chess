@@ -5,10 +5,13 @@
 #include <future>
 #include <limits>
 #include <mutex>
+#include <ctime>
+#include <algorithm>
 
 int MAX_DEPTH = 4;
 int gameValueOffset = 75;
 bool useDirectestCheckMate = true;
+std::vector<Move> opening;
 
 void setDifficulty(Difficulty dif) {
     switch (dif) 
@@ -46,6 +49,15 @@ RatedMove startCalculateMove(Move m, ChessBoard *board);
 
 Move getNextAIMove(ChessBoard *board) {
     std::vector<Move> moveset = board->get_moveset_all(board->activePlayer);
+    
+    //Eröffnungen
+    Move m = Move{(uint8_t) 0,(uint8_t)0};
+    if(board->moveCounter < 3 && std::find(moveset.begin(), moveset.end(), (m = opening_move(board))) != moveset.end() && board->is_legal(m, board->activePlayer)){
+        std::cout << "Databasemove from " << convert(m.from) << " to " << convert(m.from) << std::endl;
+        return m;
+    }
+
+
     std::vector<std::future<RatedMove>> futures;
     std::vector<RatedMove> moves;
     int index;
@@ -137,4 +149,108 @@ int calculate(ChessBoard &board, bool oponent, int depth, int alpha, int beta) {
         }
     }
     return v.highest;
+}
+
+void add_opening_move(Move m, int moveCounter){
+    if(moveCounter < 5){
+        opening.push_back(m);
+    }
+}
+
+Move opening_move(ChessBoard *board){
+    srand(time(0));
+    std::vector<Move> possible;
+
+    switch(board->moveCounter){
+        //white
+        case 0:
+        // == Operator ist überschrieben -> Move.to == square_to_index("e4")
+            possible.push_back(Move{"e2","e4"});
+            possible.push_back(Move{"d2","d4"});
+            possible.push_back(Move{"g1","f3"});
+            break;
+        //black
+        case 1:
+            if(opening[0] == "e4"){
+                possible.push_back(Move{"e7", "e6"});
+                possible.push_back(Move{"e7", "e5"});
+                possible.push_back(Move{"c7", "c5"});
+            }
+            else if(opening[0] == "d4"){
+                possible.push_back(Move{"g8", "f6"});
+                possible.push_back(Move{"d7", "d5"});
+            }
+            else if(opening[0] == "f3"){
+                possible.push_back(Move{"g8", "f6"});
+            }
+            break;
+        //white
+        case 2:
+            if(opening[0] == "e4" && (opening[1] == "c5" || opening[1] == "e5")){
+                possible.push_back(Move{"g1", "f3"});
+            }
+            else if(opening[0] == "e4" && opening[1] == "e6"){
+                possible.push_back(Move{"d2", "d4"});
+                possible.push_back(Move{"d2", "d3"});
+            }
+
+            else if(opening[0] == "d4" && (opening[1] == "f6" || opening[1] == "d5")){
+                possible.push_back(Move{"c2", "c4"});
+                possible.push_back(Move{"g1","f3"});
+            }
+
+            else if(opening[0] == "f3" && opening[1] == "f6"){
+                possible.push_back(Move{"c2", "c4"});
+                possible.push_back(Move{"g2","g3"});
+                possible.push_back(Move{"d2", "d4"});
+            }
+            break;
+         //black
+        case 3:
+            if(opening[0] == "e4" && (opening[1] == "c5" || opening[1] == "e5") && opening[2] == "f3"){
+                possible.push_back(Move{"d3", "d6"});
+                possible.push_back(Move{"b8", "c6"});
+            }
+            else if(opening[0] == "e4" && opening[1] == "e6" && (opening[2] == "d4" || opening[2] == "d3")){
+                possible.push_back(Move{"d7", "d5"});
+            }
+
+            else if(opening[0] == "d4" && (opening[1] == "f6") && (opening[2] == "c4")){
+                possible.push_back(Move{"e7", "e6"});
+                possible.push_back(Move{"g7", "g6"});
+            }
+            else if(opening[0] == "d4" && (opening[1] == "d5") && (opening[2] == "c4")){
+                possible.push_back(Move{"c7", "c6"});
+                possible.push_back(Move{"e7", "e6"});
+            }
+            else if(opening[0] == "d4" && (opening[1] == "f6") && (opening[2] == "f3")){
+                possible.push_back(Move{"d7", "d5"});
+                possible.push_back(Move{"g7", "g6"});
+                possible.push_back(Move{"e7", "e6"});
+            }
+            else if(opening[0] == "d4" && (opening[1] == "d5") && (opening[2] == "f3")){
+                possible.push_back(Move{"g8", "f6"});
+            }
+
+            else if(opening[0] == "f3" && (opening[1] == "f6") && (opening[2] == "c4")){
+                possible.push_back(Move{"g7", "g6"});
+                possible.push_back(Move{"e7", "e6"});
+                possible.push_back(Move{"c7", "c5"});
+            }
+            else if(opening[0] == "f3" && (opening[1] == "f6") && (opening[2] == "d4")){
+                possible.push_back(Move{"g7", "g6"});
+                possible.push_back(Move{"e7", "e6"});
+                possible.push_back(Move{"d7", "d5"});
+            }
+            else if(opening[0] == "f3" && (opening[1] == "f6") && (opening[2] == "g3")){
+                
+                possible.push_back(Move{"g7", "g6"});
+                possible.push_back(Move{"d7", "d5"});
+            }
+            break;
+    }
+    if(possible.size() > 0){
+        return possible[rand() % possible.size()];
+    }
+    return Move{(uint8_t) 0, (uint8_t) 0};
 }

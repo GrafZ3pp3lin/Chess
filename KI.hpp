@@ -25,5 +25,7 @@ class RatedMove
 
 Move getNextAIMove(ChessBoard *board);
 void setDifficulty(Difficulty dif);
+Move opening_move(ChessBoard *board);
+void add_opening_move(Move,int);
 
 #endif

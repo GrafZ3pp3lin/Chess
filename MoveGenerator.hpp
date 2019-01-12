@@ -37,12 +37,33 @@ inline Color operator !(Color c)
 class Move
 {
     public:
+    Move(const char from[2], const char to[2]) { 
+        this->from  =  (10 - (int)(from[1] - 48)) * 10 + ((int)(toupper(from[0])) - 64); 
+        this->to    =  (10 - (int)  (to[1] - 48)) * 10 + ((int)(toupper(  to[0])) - 64);  
+    };
+
     Move(uint8_t from, uint8_t to) : from(from), to (to) { };
-    Move(uint8_t from, uint8_t to, uint8_t flag) : from(from), to (to), flag(flag) { };
+    Move(uint8_t from, uint8_t to, uint8_t flag) : from(from), to (to), flag(flag) {};
     uint8_t from;       // index
     uint8_t to;         // index
     uint8_t flag = 0;   // 1: promotion, 2: en passant, 3: castling
+    friend bool operator==(const Move& m1, const Move& m2){
+        if(m1.from == m2.from && m1.to == m2.to && m1.flag == m2.flag){
+            return true;
+        }
+        return false;
+    }
+    //es wird nur auf move.to abgeglichen
+    friend bool operator==(const Move& m1, const char square[2]){
+        if(m1.to == (10 - (int)(square[1] - 48)) * 10 + ((int)(toupper(square[0])) - 64)){
+            return true;
+        }
+        return false;
+    }
 };
+
+
+    
 
 class ChessBoard
 {
@@ -50,6 +71,7 @@ class ChessBoard
         int8_t board[120];
         Color activePlayer;
         uint8_t endOfGame = 0; // 0: running, 1: checkmate - white wins, 2: checkmate - black wins, 3: draw
+        uint8_t moveCounter = 0;
         int gameValue = 0;
         void init();
         void end_game();
@@ -66,7 +88,6 @@ class ChessBoard
         bool load_from_FEN(const char*);
         uint8_t is_king_in_check(uint8_t index, Color color);
     private:
-        uint8_t moveCounter = 0;
         uint8_t pieceCounter = 32;
         uint8_t enPassant;
         bool white_castling_kingside = true;    //

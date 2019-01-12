@@ -1,4 +1,3 @@
-
 #include "main.hpp"
 #include "KI.hpp"
 #include <string>
@@ -10,29 +9,22 @@ int main(int argc, char const *argv[])
     chessBoard = new ChessBoard{};
     chessBoard->load_from_FEN((char*)"8/8/5K1k/8/8/8/8/7Q b - - 0 1");
     chessBoard->activePlayer = Color::BLACK;
-    setDifficulty(Difficulty::EASY);
 
-    // AI with random move selection
-    while (!chessBoard->endOfGame)
+    std::vector<Move> moveset = chessBoard->get_moveset_all(chessBoard->activePlayer);
+    //printf_s("%s %i (id: %lu)\n", "moveset size", moveset.size(), std::this_thread::get_id());
+    //std::vector<ChessBoard> boards;
+    for (Move m : moveset) 
     {
-        std::cout << std::endl << "*******************************************************************" << std::endl;
-        chessBoard->print();
-        std::cout << " < AI calculates Move..." << std::endl;
-
-        Move ai_move = getNextAIMove(chessBoard);
-        std::cout << " < AI move: " << index_to_square(ai_move.from) << " -> " << index_to_square(ai_move.to) << std::endl;
-        chessBoard->move_piece(ai_move);
-        chessBoard->activePlayer = !chessBoard->activePlayer;
-
-        std::cout << std::endl << "*******************************************************************" << std::endl;
-        chessBoard->print();
-        Move player_move = get_move_of_player(chessBoard);
-        chessBoard->move_piece(player_move);
-        chessBoard->activePlayer = !chessBoard->activePlayer;
-        
+        printf_s("%s from: %i to: %i\n", "Move: ", m.from, m.to);
+        std::cout << chessBoard->is_legal(m, chessBoard->activePlayer) << std::endl;
+        //if (chessBoard->is_legal(m, chessBoard->activePlayer)) {
+            /*ChessBoard boardCopy{*chessBoard};
+            boardCopy.move_piece(m, true);
+            boardCopy.activePlayer = !boardCopy.activePlayer;
+            boards.push_back(boardCopy);*/
+        //}
+        //printf_s("%s from: %i to: %i\n", "finish check Move: ", m.from, m.to);
     }
-    chessBoard->print();
-    chessBoard->end_game();
 
     printf_s("%s", "BEFORE DELETE\n");
     
@@ -51,7 +43,7 @@ void save(std::string filename)
     myfile.close();
 }
 
-const char* load(std::string filename)
+ChessBoard* load(std::string filename)
 {
     std::ifstream infile;
 	infile.open( filename );
