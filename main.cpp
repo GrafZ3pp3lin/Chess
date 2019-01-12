@@ -51,7 +51,7 @@ int main(int argc, char const *argv[])
         if(!chessBoard->load_from_FEN(path.c_str())) { std::cout << "ja"; }
         else if(!chessBoard->load_from_FEN(load(path.c_str())));
         else{
-            std::cout << "No valid Chess-game, you start now with a normal game " << std::endl;
+            std::cout << "No valid Chess-game, you start with a normal game " << std::endl;
             chessBoard->init();
         }
     }
@@ -65,7 +65,7 @@ int main(int argc, char const *argv[])
         }
         chessBoard->print();
         Move player_move = get_move_of_player(chessBoard);
-        chessBoard->move_piece(player_move);
+        chessBoard->move_piece(player_move, false);
         chessBoard->activePlayer = !chessBoard->activePlayer;
         std::cout << std::endl << "*******************************************************************" << std::endl;
             //multiplayer
@@ -73,7 +73,7 @@ int main(int argc, char const *argv[])
             std::cout << "Player 2 is on the line:" << std::endl;
             chessBoard->print();
             Move player_move = get_move_of_player(chessBoard);
-            chessBoard->move_piece(player_move);
+            chessBoard->move_piece(player_move, false);
         }
         else{
             add_opening_move(player_move, chessBoard->moveCounter-1);
@@ -83,7 +83,7 @@ int main(int argc, char const *argv[])
 
             Move ai_move = getNextAIMove(chessBoard);
             std::cout << " < AI move: " << index_to_square(ai_move.from) << " -> " << index_to_square(ai_move.to) << std::endl;
-            chessBoard->move_piece(ai_move);
+            chessBoard->move_piece(ai_move, true);
             add_opening_move(ai_move, chessBoard->moveCounter);
         }
         chessBoard->activePlayer = !chessBoard->activePlayer;
@@ -101,7 +101,6 @@ void save(std::string filename) {
     myfile.open (filename);
     char* fen = (char*) chessBoard->convert_to_FEN().c_str();
     myfile.write( fen, strlen(fen));
-    std::cout << (int)length << std::endl;
     std::cout << chessBoard->convert_to_FEN() << std::endl;
     myfile.close();
 }

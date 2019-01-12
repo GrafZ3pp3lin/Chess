@@ -940,12 +940,12 @@ bool ChessBoard::is_legal(Move m, Color color)
     return true;
 }
 
-void ChessBoard::move_piece(Move m)
+void ChessBoard::move_piece(Move m, bool aiMove)
 {
-    move_piece(m, false);
+    move_piece(m, false, aiMove);
 }
 
-void ChessBoard::move_piece(Move m, bool ignoreFlag)
+void ChessBoard::move_piece(Move m, bool ignoreFlag, bool aiMove)
 {
     // count moves for fifty-moves rule
     if (is_empty(board[m.to])) moveCounter++;
@@ -974,7 +974,7 @@ void ChessBoard::move_piece(Move m, bool ignoreFlag)
         // promotion
         if (m.flag == 1)
         {
-            promote_pawn(m.to);
+            promote_pawn(m.to, aiMove);
         }
         // as passant
         else if (m.flag == 2)
@@ -1039,11 +1039,11 @@ void ChessBoard::check_draw()
     // TODO: other draws
 }
 
-void ChessBoard::promote_pawn(uint8_t index)
+void ChessBoard::promote_pawn(uint8_t index, bool aiMove)
 {
-    if (activePlayer == Color::BLACK)
+    if (aiMove)
     {
-        board[index] = 24; // always promote AI pawn to queen
+        board[index] = activePlayer==Color::WHITE? 14 : 24; // always promote AI pawn to queen
     }
     else
     {
