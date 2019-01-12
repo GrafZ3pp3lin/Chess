@@ -66,9 +66,10 @@ int main(int argc, char const *argv[])
         if(multiplayermode){
             std::cout << "Player 1 is on the line:" << std::endl;
         }
+        chessBoard->disable_ai_move();
         chessBoard->print();
         Move player_move = get_move_of_player(chessBoard);
-        chessBoard->move_piece(player_move, false);
+        chessBoard->move_piece(player_move);
         chessBoard->activePlayer = !chessBoard->activePlayer;
         if (!chessBoard->is_move_possible()) {
             break; //continue?
@@ -79,9 +80,10 @@ int main(int argc, char const *argv[])
             std::cout << "Player 2 is on the line:" << std::endl;
             chessBoard->print();
             Move player_move = get_move_of_player(chessBoard);
-            chessBoard->move_piece(player_move, false);
+            chessBoard->move_piece(player_move);
         }
         else{
+            chessBoard->enable_ai_move();
             add_opening_move(player_move, chessBoard->moveCounter-1);
             //AI
             chessBoard->print();
@@ -89,7 +91,7 @@ int main(int argc, char const *argv[])
 
             Move ai_move = getNextAIMove(chessBoard);
             std::cout << " < AI move: " << index_to_square(ai_move.from) << " -> " << index_to_square(ai_move.to) << std::endl;
-            chessBoard->move_piece(ai_move, true);
+            chessBoard->move_piece(ai_move);
             add_opening_move(ai_move, chessBoard->moveCounter);
         }
         chessBoard->activePlayer = !chessBoard->activePlayer;

@@ -263,6 +263,14 @@ bool ChessBoard::load_from_FEN(const char *fen)
     return true;
 }
 
+void ChessBoard::enable_ai_move(){
+    aiMove = true;
+}
+
+void ChessBoard::disable_ai_move(){
+    aiMove = false;
+}
+
 
 void ChessBoard::init()
 {
@@ -967,12 +975,12 @@ bool ChessBoard::is_move_possible() {
     return false;
 }
 
-void ChessBoard::move_piece(Move m, bool aiMove)
+void ChessBoard::move_piece(Move m)
 {
-    move_piece(m, false, aiMove);
+    move_piece(m, false);
 }
 
-void ChessBoard::move_piece(Move m, bool ignoreFlag, bool aiMove)
+void ChessBoard::move_piece(Move m, bool ignoreFlag)
 {
     // count moves for fifty-moves rule
     if (is_empty(board[m.to])) moveCounter++;
@@ -1001,7 +1009,7 @@ void ChessBoard::move_piece(Move m, bool ignoreFlag, bool aiMove)
         // promotion
         if (m.flag == 1)
         {
-            promote_pawn(m.to, aiMove);
+            promote_pawn(m.to);
         }
         // as passant
         else if (m.flag == 2)
@@ -1066,7 +1074,7 @@ void ChessBoard::check_draw()
     // TODO: other draws
 }
 
-void ChessBoard::promote_pawn(uint8_t index, bool aiMove)
+void ChessBoard::promote_pawn(uint8_t index)
 {
     if (aiMove)
     {

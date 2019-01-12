@@ -3,6 +3,16 @@
 
 #include "MoveGenerator.hpp"
 
+template <typename T>
+bool contains(std::vector<T> vec, T val){
+    for(T a: vec){
+        if(a == val){
+            return true;
+        }
+    }
+    return false;
+}
+
 union Value {
     int highest;
     int lowest;

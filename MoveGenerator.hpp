@@ -79,8 +79,8 @@ class ChessBoard
         void print_moveset();
         bool is_empty(int8_t p);
         Color get_color(uint8_t index);
-        void move_piece(Move m, bool aiMove);
-        void move_piece(Move m, bool ingoreFlag, bool aiMove);
+        void move_piece(Move m);
+        void move_piece(Move m, bool ingoreFlag);
         bool is_legal(Move m, Color color);
         bool is_move_possible();
         std::vector<Move> get_moveset_all(Color color);
@@ -88,9 +88,12 @@ class ChessBoard
         std::string convert_to_FEN();
         bool load_from_FEN(const char*);
         uint8_t is_king_in_check(uint8_t index, Color color);
+        void enable_ai_move();
+        void disable_ai_move();
     private:
         uint8_t pieceCounter = 32;
         uint8_t enPassant;
+        bool aiMove = false;
         bool white_castling_kingside = true;    //
         bool white_castling_queenside = true;   // only check, whether king or rook have move during the game;
         bool black_castling_kingside = true;    // other castling-rules are checked during move generation
@@ -109,7 +112,7 @@ class ChessBoard
         std::vector<Move> get_moveset_pawn(uint8_t index, Color color);
         bool is_white(int8_t p);
         bool is_black(int8_t p);
-        void promote_pawn(uint8_t index, bool aiMove);
+        void promote_pawn(uint8_t index);
         void check_draw();
         char* index_to_piece(uint8_t index);
 };
