@@ -3,9 +3,10 @@
 #include <string>
 #include <cstring>
 #include "MoveGenerator.hpp"
+#include <memory>
 
 bool multiplayermode = false;
-ChessBoard* chessBoard;
+auto chessBoard = std::make_shared<ChessBoard>();
 
 int main(int argc, char const *argv[])
 {
@@ -25,7 +26,6 @@ int main(int argc, char const *argv[])
     
     std::string in;
 
-    chessBoard = new ChessBoard{};
     chessBoard->init();
     setDifficulty(Difficulty::NORMAL);
 
@@ -99,7 +99,6 @@ int main(int argc, char const *argv[])
     chessBoard->print();
     chessBoard->end_game();
 
-    delete chessBoard;
     
     return 0;
 }

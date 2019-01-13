@@ -2,6 +2,7 @@
 #include "main.hpp"
 
 #include <limits>
+#include <memory>
 
 int8_t square_to_index(char square[2])
 {
@@ -18,7 +19,7 @@ const char* index_to_square(int8_t index)
     return square;
 }
 
-Move get_move_of_player(ChessBoard *board)
+Move get_move_of_player(std::shared_ptr<ChessBoard>& board)
 {
     char buf[2] = { 0, 0 };
     uint8_t from;

@@ -7,6 +7,7 @@
 #include <mutex>
 #include <ctime>
 #include <algorithm>
+#include <memory>
 
 int MAX_DEPTH = 4;
 int gameValueOffset = 75;
@@ -45,9 +46,9 @@ const char* convert(int8_t index)
 //------------------------------------DEBUG------------------------------------------------
 
 int calculate(ChessBoard &board, bool oponent, int depth, int alpha, int beta);
-RatedMove startCalculateMove(Move m, ChessBoard *board);
+RatedMove startCalculateMove(Move m, ChessBoard* board);
 
-Move getNextAIMove(ChessBoard *board) {
+Move getNextAIMove(std::shared_ptr<ChessBoard>& board) {
     std::vector<Move> moveset = board->get_moveset_all(board->activePlayer);
     
     //Eröffnungen
@@ -64,7 +65,7 @@ Move getNextAIMove(ChessBoard *board) {
     for (int i = 0; i < moveset.size(); i++) {
         if (board->is_legal(moveset[i], board->activePlayer)) {
             //start for each possible Move one Thread
-            futures.push_back(std::async(std::launch::async, &startCalculateMove, moveset[i], board));
+            futures.push_back(std::async(std::launch::async, &startCalculateMove, moveset[i], board.get()));
         }
     }
     Value v;
@@ -98,7 +99,7 @@ Move getNextAIMove(ChessBoard *board) {
     return bestMoves[rand() % bestMoves.size()].move;
 }
 
-RatedMove startCalculateMove(Move m, ChessBoard *board) {
+RatedMove startCalculateMove(Move m, ChessBoard* board) {
     ChessBoard boardCopy{*board};
     boardCopy.move_piece(m, true);
     boardCopy.activePlayer = !boardCopy.activePlayer;
@@ -152,12 +153,12 @@ int calculate(ChessBoard &board, bool oponent, int depth, int alpha, int beta) {
 }
 
 void add_opening_move(Move m, int moveCounter){
-    if(moveCounter < 5){
+    if(moveCounter < 4){
         opening.push_back(m);
     }
 }
 
-Move opening_move(ChessBoard *board){
+Move opening_move(std::shared_ptr<ChessBoard>& board){
     srand(time(0));
     std::vector<Move> possible;
 

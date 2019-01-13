@@ -2,6 +2,7 @@
 #define DHBW_CHESS_KI
 
 #include "MoveGenerator.hpp"
+#include <memory>
 
 template <typename T>
 bool contains(std::vector<T> vec, T val){
@@ -33,9 +34,9 @@ class RatedMove
     int value = 0;
 };
 
-Move getNextAIMove(ChessBoard *board);
+Move getNextAIMove(std::shared_ptr<ChessBoard>& board);
 void setDifficulty(Difficulty dif);
-Move opening_move(ChessBoard *board);
+Move opening_move(std::shared_ptr<ChessBoard>& board);
 void add_opening_move(Move,int);
 
 #endif
