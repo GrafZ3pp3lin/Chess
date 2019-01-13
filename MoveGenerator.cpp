@@ -226,6 +226,7 @@ bool ChessBoard::load_from_FEN(const char *fen)
     if (fen[next] == '-')
     {
         enPassant = 0;
+        next++;
     }
     else if (((fen[next] > 64 && fen[next] < 73) || (fen[next] > 96 && fen[next] < 105))
             && (fen[next+1] > 48 && fen[next+1] < 57))
