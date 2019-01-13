@@ -116,3 +116,29 @@ const char* load(std::string filename){
     infile.close();
     return line.c_str();
 }
+
+void quit(){
+    std::cout << std::endl << " > Do you want to save your game? [Y/n]" << std::endl;
+    std::string in;
+    std::getline(std::cin, in);
+    std::getline(std::cin, in);
+
+    if(in == "n"){
+    
+    }
+    else if(in == "y" || in == ""){
+        std::cout << " > Please type in the name to save your game"  << std::endl;
+        std::string in;
+        std::getline(std::cin, in);
+        save(in);
+    }
+    exit(0);
+}
+
+void help(){
+    std::cout << "In CHESS AI it is possible to play Chess with another person in multiplayer or you can try to beat our AI (you will loose :) )" << std::endl
+        << "If you want you can load a game by entering it in FEN-notation (input directly or path to FEN-file)" << std::endl << std::endl
+        //about
+        << "This Game was developed in a C++ project of the DHBW Stuttgart Campus Horb in 2018/19" << std::endl 
+        << "programmers: Johannes Gaiser, Peter Würth, Joel Schmid" << std::endl << "Thank you for playing our game :)" << std::endl;
+}

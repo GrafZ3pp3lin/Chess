@@ -10,5 +10,7 @@
 
 void save(std::string);
 const char* load(std::string);
+void help();
+void quit();
 
 #endif
