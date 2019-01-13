@@ -197,25 +197,25 @@ bool ChessBoard::load_from_FEN(const char *fen)
     {
         if(fen[next] == 'K')
         {
-            black_castling_kingside = true;
+            white_castling_kingside = true;
             next++;
         }
         if (next >= n) return false;
         if(fen[next] == 'Q')
         {
-            black_castling_queenside = true;
+            white_castling_queenside = true;
             next++;
         }
         if (next >= n) return false;
         if(fen[next] == 'k')
         {
-            white_castling_kingside = true;
+            black_castling_kingside = true;
             next++;
         }
         if (next >= n) return false;
         if(fen[next] == 'q')
         {
-            white_castling_queenside = true;
+            black_castling_queenside = true;
             next++;
         }
     }
@@ -226,6 +226,7 @@ bool ChessBoard::load_from_FEN(const char *fen)
     if (fen[next] == '-')
     {
         enPassant = 0;
+        next++;
     }
     else if (((fen[next] > 64 && fen[next] < 73) || (fen[next] > 96 && fen[next] < 105))
             && (fen[next+1] > 48 && fen[next+1] < 57))
@@ -233,7 +234,7 @@ bool ChessBoard::load_from_FEN(const char *fen)
         char ep[3] = 
         {
             fen[next],
-            fen[next+1] > 50 ? char(fen[next+1] - 1) : char(fen[next+1] + 1),
+            fen[next+1] > 52 ? char(fen[next+1] - 1) : char(fen[next+1] + 1),
             '\0'
         };
         enPassant = square_to_index(ep);
@@ -751,7 +752,7 @@ std::vector<Move> ChessBoard::get_moveset_pawn(uint8_t i, Color color)
     }
     else if (color == Color::WHITE ? is_black(board[j]) : is_white(board[j]))
     {
-        moveset.push_back(Move{i, j, 2});
+        moveset.push_back(Move{i, j});
     }
     // forward left
     j = i + direction * 11;
@@ -1003,6 +1004,25 @@ void ChessBoard::move_piece(Move m, bool ignoreFlag)
     // check for checkmate
     if (board[m.to] == 20) endOfGame = 1; // white wins
     else if (board[m.to] == 10) endOfGame = 2; // black wins
+    // check en passant
+    if (!ignoreFlag)
+    {
+        uint8_t e = activePlayer == Color::WHITE ? m.from-1 : m.from+1;
+        if (activePlayer == Color::WHITE && board[e] == 2
+        || activePlayer == Color::BLACK && board[e] == 1)
+        {
+            if (enPassant == e)
+            {
+                std::cout << "   " 
+                    << index_to_piece(enPassant) 
+                    << " got captured by " 
+                    << index_to_piece(m.from)
+                    << std::endl;
+                board[enPassant] = 0;
+                moveCounter = 0;
+            }
+        }
+    }
     // move piece
     board[m.to] = board[m.from];
     board[m.from] = 0;

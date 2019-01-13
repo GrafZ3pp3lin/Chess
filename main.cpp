@@ -60,7 +60,7 @@ int main(int argc, char const *argv[])
     while (!chessBoard->endOfGame)
     {
         if (!chessBoard->is_move_possible()) {
-            break; //continue?
+            continue;
         }
         std::cout << std::endl << "*******************************************************************" << std::endl;
         if(multiplayermode){
@@ -72,10 +72,10 @@ int main(int argc, char const *argv[])
         chessBoard->move_piece(player_move);
         chessBoard->activePlayer = !chessBoard->activePlayer;
         if (!chessBoard->is_move_possible()) {
-            break; //continue?
+            continue;
         }
         std::cout << std::endl << "*******************************************************************" << std::endl;
-            //multiplayer
+        //multiplayer
         if(multiplayermode){
             std::cout << "Player 2 is on the line:" << std::endl;
             chessBoard->print();
