@@ -48,6 +48,14 @@ Move get_move_of_player(std::shared_ptr<ChessBoard>& board)
                 }
                 exit(0);
             }
+
+            //help
+            if(buf[0] == 81 /*H*/){
+                std::cout << "In this game it is possible to play with another person in multiplayer or you can try to beat our AI (you will loose :) )" << std::endl;
+                std::cout << "If you want you can load a game by entering it in FEN-notation (input directly or path to FEN-file)" << std::endl << std::endl;
+                std::cout << "This Game was developed in a C++ project of the DHBW Stuttgart Campus Horb in 2018/19" << std::endl <<
+                                "programmers: Johannes Gaiser, Peter Würth, Joel Schmid" << std::endl << "Thank you for playing our game :)" << std::endl;
+            }
         }
         from = square_to_index(buf);
         if (!board->is_empty(board->board[from]))

@@ -19,11 +19,7 @@ int main(int argc, char const *argv[])
     std::cout <<"`88b    ooo   888   888  888    .o o.  )88b o.  )88b       .8'     `888.   888"  << std::endl;
     std::cout <<" `Y8bood8P'  o888o o888o `Y8bod8P' `Y8888P' `Y8888P'      o88o     o8888o o888o"  << std::endl;
     
-    std::cout << std::endl << std::endl;                                                   
-    std::cout << "At first are some helpful information.\nYou can Play with another person in multiplayer or you can try to beat our AI (you will loose :) )" << std::endl;
-    std::cout << "If you want you can load a game by entering it in FEN-notation (input directly or path to FEN-file)" << std::endl << std::endl;
-    std::cout << "You can quit the game by typing in \"q\", now you can choose to save or quit the game" << std::endl;
-    
+    std::cout << std::endl << "you can quit the game with \"q\" or get help with\"h\"" << std::endl;                                                   
     std::string in;
 
     chessBoard->init();
