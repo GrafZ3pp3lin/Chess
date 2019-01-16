@@ -17,18 +17,18 @@ int evaluate_board(ChessBoard *board)
         {
             switch (board->board[k])
             {
-                case 1:  { whiteAdvantage += (int)PieceValue::PAWN; break; }
-                case 11: { whiteAdvantage += (int)PieceValue::ROOK; break; }
-                case 12: { whiteAdvantage += (int)PieceValue::KNIGHT; break; }
-                case 13: { whiteAdvantage += (int)PieceValue::BISHOP; break; }
-                case 14: { whiteAdvantage += (int)PieceValue::QUEEN; whiteQueenNotCaptured = true; break; }
-                case 10: { whiteAdvantage += (int)PieceValue::KING; whiteKingPos = k; break; }
-                case 2:  { blackAdvantage += (int)PieceValue::PAWN; break; }
-                case 21: { blackAdvantage += (int)PieceValue::ROOK; break; }
-                case 22: { blackAdvantage += (int)PieceValue::KNIGHT; break; }
-                case 23: { blackAdvantage += (int)PieceValue::BISHOP; break; }
-                case 24: { blackAdvantage += (int)PieceValue::QUEEN; blackQueenNotCaptured = true; break; }
-                case 20: { blackAdvantage += (int)PieceValue::KING; blackKingPos = k; break; }
+                case 1:  { whiteAdvantage += static_cast<int>(PieceValue::PAWN); break; }
+                case 11: { whiteAdvantage += static_cast<int>(PieceValue::ROOK); break; }
+                case 12: { whiteAdvantage += static_cast<int>(PieceValue::KNIGHT); break; }
+                case 13: { whiteAdvantage += static_cast<int>(PieceValue::BISHOP); break; }
+                case 14: { whiteAdvantage += static_cast<int>(PieceValue::QUEEN); whiteQueenNotCaptured = true; break; }
+                case 10: { whiteAdvantage += static_cast<int>(PieceValue::KING); whiteKingPos = k; break; }
+                case 2:  { blackAdvantage += static_cast<int>(PieceValue::PAWN); break; }
+                case 21: { blackAdvantage += static_cast<int>(PieceValue::ROOK); break; }
+                case 22: { blackAdvantage += static_cast<int>(PieceValue::KNIGHT); break; }
+                case 23: { blackAdvantage += static_cast<int>(PieceValue::BISHOP); break; }
+                case 24: { blackAdvantage += static_cast<int>(PieceValue::QUEEN); blackQueenNotCaptured = true; break; }
+                case 20: { blackAdvantage += static_cast<int>(PieceValue::KING); blackKingPos = k; break; }
             }
         }
     }
@@ -38,9 +38,9 @@ int evaluate_board(ChessBoard *board)
      *  - 1500 (= queen + rook) or fewer points in material (not counting the king)
      */
     bool endgame = false;
-    int minMaterial = (int)PieceValue::QUEEN + (int)PieceValue::ROOK;
-    if (!whiteQueenNotCaptured && !blackQueenNotCaptured
-    || whiteAdvantage < minMaterial && blackAdvantage < minMaterial)
+    int minMaterial = static_cast<int>(PieceValue::QUEEN) + static_cast<int>(PieceValue::ROOK);
+    if ((!whiteQueenNotCaptured && !blackQueenNotCaptured)
+    || (whiteAdvantage < minMaterial && blackAdvantage < minMaterial))
     {
         endgame = true;
     }
@@ -68,17 +68,17 @@ int evaluate_board(ChessBoard *board)
     // consider king in check or check mate
     if (whiteKingPos == -1)
     {
-        blackAdvantage += (int)PieceValue::KING;
+        blackAdvantage += static_cast<int>(PieceValue::KING);
     }
-    else if (board->is_king_in_check(whiteKingPos, Color::WHITE))
+    else if (board->is_king_in_check(static_cast<uint8_t>(whiteKingPos), Color::WHITE))
     {
         blackAdvantage += checkBonus;
     }
     if (blackKingPos == -1)
     {
-        whiteAdvantage += (int)PieceValue::KING;
+        whiteAdvantage += static_cast<int>(PieceValue::KING);
     }
-    else if (board->is_king_in_check(blackKingPos, Color::BLACK))
+    else if (board->is_king_in_check(static_cast<uint8_t>(whiteKingPos), Color::BLACK))
     {
         whiteAdvantage += checkBonus;
     }

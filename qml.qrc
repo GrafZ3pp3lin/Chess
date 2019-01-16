@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>Piece.qml</file>
+        <file>ChessBoard.qml</file>
+        <file>Selection.qml</file>
+    </qresource>
+</RCC>

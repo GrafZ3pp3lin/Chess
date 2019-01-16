@@ -1,35 +1,40 @@
 #include "MoveGenerator.hpp"
-#include "Player.hpp"
 
-#include <iostream>
-#include <string>
-#include <limits>
+uint8_t square_to_index(char square[2])
+{
+    return static_cast<uint8_t>((10 - (square[1] - 48)) * 10 // rank
+            + ((toupper(square[0])) - 64)); // file
+}
 
-char transfer(int);
-int8_t transfer_back(char);
+const char* index_to_square(int8_t index)
+{
+    char* square = new char[3];
+    square[0] = static_cast<char>((index % 10) + 64);
+    square[1] = static_cast<char>(10 - (index / 10) + 48);
+    square[2] = '\0';
+    return square;
+}
 
 char* ChessBoard::index_to_piece(uint8_t index)
 {
     switch (board[index])
     {
-        case 1: return (char*)"white pawn";
-        case 11: return (char*)"white rook";
-        case 12: return (char*)"white knight";
-        case 13: return (char*)"white bishop";
-        case 14: return (char*)"white queen";
-        case 10: return (char*)"white king";
-        case 2: return (char*)"black pawn";
-        case 21: return (char*)"black rook";
-        case 22: return (char*)"black knight";
-        case 23: return (char*)"black bishop";
-        case 24: return (char*)"black queen";
-        case 20: return (char*)"black king";
-        default: return (char*)"";
+    case 1:  return const_cast<char *>("white pawn");
+    case 11: return const_cast<char *>("white rook");
+    case 12: return const_cast<char *>("white knight");
+    case 13: return const_cast<char *>("white bishop");
+    case 14: return const_cast<char *>("white queen");
+    case 10: return const_cast<char *>("white king");
+    case 2:  return const_cast<char *>("black pawn");
+    case 21: return const_cast<char *>("black rook");
+    case 22: return const_cast<char *>("black knight");
+    case 23: return const_cast<char *>("black bishop");
+    case 24: return const_cast<char *>("black queen");
+    case 20: return const_cast<char *>("black king");
+    default: return const_cast<char *>("");
     }
 }
-/**
- * converts the ChessBoard in FEN-notation for saving
- * */
+
 std::string ChessBoard::convert_to_FEN()
 {
     std::string fen = "";
@@ -41,7 +46,7 @@ std::string ChessBoard::convert_to_FEN()
             if(board[i] > 0){
                 if(jumped_fields > 0)
                 {
-                    fen += (jumped_fields+48);
+                    fen += static_cast<char>(jumped_fields+48);
                     jumped_fields = 0;
                 }
                 fen += transfer(board[i]);
@@ -55,7 +60,7 @@ std::string ChessBoard::convert_to_FEN()
         {
             if(jumped_fields > 0)
             {
-                fen += (jumped_fields+48);
+                fen += static_cast<char>(jumped_fields+48);
                 jumped_fields = 0;
             }
             fen += "/";
@@ -102,7 +107,7 @@ std::string ChessBoard::convert_to_FEN()
     //enPassant
     if(enPassant < 99 && enPassant > 21)
     {
-        std::string field(index_to_square(enPassant));
+        std::string field(index_to_square(static_cast<int8_t>(enPassant > 60 ? enPassant - 10 : enPassant + 10)));
         fen += " " + field;
     }
     else{
@@ -110,7 +115,8 @@ std::string ChessBoard::convert_to_FEN()
     }
 
     //Züge
-    fen += " " + std::to_string(moveCounter) + " -";
+    fen += " " + std::to_string(fiftyMovesRuleCounter);
+    fen += " " + std::to_string(moveCounter);
     return fen;
 }
 
@@ -137,7 +143,7 @@ bool ChessBoard::load_from_FEN(const char *fen)
     for(int i = 0; i < n; i++)
     {
         char c = fen[i];
-        if (c > 65 && c < 90 || c > 97 && c < 122)
+        if ((c > 65 && c < 90) || (c > 97 && c < 122))
         {
             int rank = index / 10 - 1;
             int file = index % 10;
@@ -147,7 +153,7 @@ bool ChessBoard::load_from_FEN(const char *fen)
             }
             board[index] = transfer_back(c);
             index++;
-        }  
+        }
         else if (c > 48 && c < 57)
         {
             index += c - 48;
@@ -229,9 +235,9 @@ bool ChessBoard::load_from_FEN(const char *fen)
         next++;
     }
     else if (((fen[next] > 64 && fen[next] < 73) || (fen[next] > 96 && fen[next] < 105))
-            && (fen[next+1] > 48 && fen[next+1] < 57))
+             && (fen[next+1] > 48 && fen[next+1] < 57))
     {
-        char ep[3] = 
+        char ep[3] =
         {
             fen[next],
             fen[next+1] > 52 ? char(fen[next+1] - 1) : char(fen[next+1] + 1),
@@ -250,11 +256,11 @@ bool ChessBoard::load_from_FEN(const char *fen)
     {
         if (next + 1 < n && fen[next+1] != 32 && fen[next+1] >= 48 && fen[next+1] < 58)
         {
-            moveCounter = (fen[next] - 48) * 10 + (fen[next+1] - 48);
+            fiftyMovesRuleCounter = static_cast<uint8_t>((fen[next] - 48) * 10 + (fen[next+1] - 48));
         }
         else
         {
-            moveCounter = fen[next] - 48;
+            fiftyMovesRuleCounter = static_cast<uint8_t>(fen[next] - 48);
         }
     }
     else
@@ -264,17 +270,14 @@ bool ChessBoard::load_from_FEN(const char *fen)
     return true;
 }
 
-void ChessBoard::enable_ai_move(){
-    aiMove = true;
-}
-
-void ChessBoard::disable_ai_move(){
-    aiMove = false;
-}
-
-
 void ChessBoard::init()
 {
+    // reset parameters
+    activePlayer = Color::WHITE;
+    endOfGame = 0;
+    fiftyMovesRuleCounter = 0;
+    moveCounter = 1;
+    gameValue = 0;
     // off the board
     for (uint8_t i = 0; i < 120; i++)
     {
@@ -320,41 +323,41 @@ void ChessBoard::init()
 
 char transfer(int id)
 {
-    switch(id) 
+    switch(id)
     {
-        case 1: return 'P';
-        case 2: return 'p';
-        case 11: return 'R';
-        case 21: return 'r';
-        case 12: return 'N';
-        case 22: return 'n';
-        case 13: return 'B';
-        case 23: return 'b';
-        case 14: return 'Q';
-        case 24: return 'q';
-        case 10: return 'K';
-        case 20: return 'k';
-        default: return ' ';
+    case 1: return 'P';
+    case 2: return 'p';
+    case 11: return 'R';
+    case 21: return 'r';
+    case 12: return 'N';
+    case 22: return 'n';
+    case 13: return 'B';
+    case 23: return 'b';
+    case 14: return 'Q';
+    case 24: return 'q';
+    case 10: return 'K';
+    case 20: return 'k';
+    default: return ' ';
     }
 }
 
 int8_t transfer_back(char piece)
 {
-    switch(piece) 
+    switch(piece)
     {
-        case 'P': return 1;
-        case 'p': return 2;
-        case 'R': return 11;
-        case 'r': return 21;
-        case 'N': return 12;
-        case 'n': return 22;
-        case 'B': return 13;
-        case 'b': return 23;
-        case 'Q': return 14;
-        case 'q': return 24;
-        case 'K': return 10;
-        case 'k': return 20;
-        default: return 0;
+    case 'P': return 1;
+    case 'p': return 2;
+    case 'R': return 11;
+    case 'r': return 21;
+    case 'N': return 12;
+    case 'n': return 22;
+    case 'B': return 13;
+    case 'b': return 23;
+    case 'Q': return 14;
+    case 'q': return 24;
+    case 'K': return 10;
+    case 'k': return 20;
+    default: return 0;
     }
 }
 
@@ -374,7 +377,7 @@ void ChessBoard::print()
         std::cout << 8 - i << " ";
         for (int j = 0; j < 8; j++) {
             //Felder schwarz/weiß
-            c = ((j + i) % 2 == 0 ? char(0xDB) : c = char(0xFF));
+            c = (j + i) % 2 == 0 ? char(0xDB) : c = char(0xFF);
             char f = transfer(board[i * 10 + 21 + j]);
             f = f == ' ' ? c : f;
             std::cout << char(0xB3) << c << f << c;
@@ -397,40 +400,17 @@ void ChessBoard::print()
     std::cout << char(0xC4) << char(0xC4) << char(0xC4) << char(0xD9) << std::endl;
 }
 
-void ChessBoard::end_game()
-{
-    std::cout << "   game is over: ";
-    switch (endOfGame)
-    {
-        case 1:
-        {
-            std::cout << "white wins";
-            break;
-        }
-        case 2:
-        {
-            std::cout << "black wins";
-            break;
-        }
-        case 3:
-        {
-            std::cout << "draw";
-            break;
-        }
-    }
-}
-
 void ChessBoard::print_moveset()
 {
     std::vector<Move> moveset = get_moveset_all(activePlayer);
-    for (int i = 0; i  < moveset.size(); i++)
+    for (size_t i = 0; i  < moveset.size(); i++)
     {
-        std::cout 
-            << std::to_string(i + 1) << " : " 
-            << std::to_string(moveset[i].from) << " -> " 
-            << std::to_string(moveset[i].to) 
-            << (moveset[i].flag != 0 ? " (" + std::to_string(moveset[i].flag) + ") " : "") 
-            << std::endl;
+        std::cout
+                << std::to_string(i + 1) << " : "
+                << std::to_string(moveset[i].from) << " -> "
+                << std::to_string(moveset[i].to)
+                << (moveset[i].flag != 0 ? " (" + std::to_string(moveset[i].flag) + ") " : "")
+                << std::endl;
     }
 }
 
@@ -467,7 +447,6 @@ std::vector<Move> ChessBoard::get_moveset_all(Color color)
     const uint8_t bishop = color == Color::WHITE ? 13 : 23;
     const uint8_t queen = color == Color::WHITE ? 14 : 24;
     const uint8_t king = color == Color::WHITE ? 10 : 20;
-    uint8_t j;
     // check for all pseudo-legal moves from board[i] to board[j]
     for (uint8_t i = 21; i < 99; i++)
     {
@@ -506,11 +485,11 @@ std::vector<Move> ChessBoard::get_moveset_all(Color color)
     return moveset;
 }
 
-int8_t offset_bishop[4] = { -11, -9, 9, 11 };
-int8_t offset_knight[8] = { -21, -19, -12, -8, 8, 12, 19, 21 };
-int8_t offset_rook[4] = { -10, -1, 1, 10 };
-int8_t offset_queen[8] = { -11, -10, -9, -1, 1, 9, 10, 11 };
-int8_t offset_king[8] = { -11, -10, -9, -1, 1, 9, 10, 11 };
+const int8_t offset_bishop[4] = { -11, -9, 9, 11 };
+const int8_t offset_knight[8] = { -21, -19, -12, -8, 8, 12, 19, 21 };
+const int8_t offset_rook[4] = { -10, -1, 1, 10 };
+const int8_t offset_queen[8] = { -11, -10, -9, -1, 1, 9, 10, 11 };
+const int8_t offset_king[8] = { -11, -10, -9, -1, 1, 9, 10, 11 };
 
 std::vector<Move> ChessBoard::get_moveset_king(uint8_t index)
 {
@@ -548,7 +527,7 @@ std::vector<Move> ChessBoard::get_moveset_king(uint8_t i, Color color)
     uint8_t j;
     for (int8_t o : offset_king)
     {
-        j = i + o;
+        j = static_cast<uint8_t>(i + o);
         // outside of board
         if (board[j] == -1) continue;
         // own piece
@@ -563,7 +542,7 @@ std::vector<Move> ChessBoard::get_moveset_king(uint8_t i, Color color)
         if (white_castling_kingside)
         {
             if (is_empty(board[96]) && is_empty(board[97])
-            && !is_king_in_check(95, color) && !is_king_in_check(96, color) && !is_king_in_check(97, color))
+                    && !is_king_in_check(95, color) && !is_king_in_check(96, color) && !is_king_in_check(97, color))
             {
                 moveset.push_back(Move{95, 97, 3});
             }
@@ -572,7 +551,7 @@ std::vector<Move> ChessBoard::get_moveset_king(uint8_t i, Color color)
         if (white_castling_queenside)
         {
             if (is_empty(board[94]) && is_empty(board[93]) && is_empty(board[92])
-            && !is_king_in_check(95, color) && !is_king_in_check(94, color) && !is_king_in_check(93, color))
+                    && !is_king_in_check(95, color) && !is_king_in_check(94, color) && !is_king_in_check(93, color))
             {
                 moveset.push_back(Move{95, 93, 3});
             }
@@ -584,7 +563,7 @@ std::vector<Move> ChessBoard::get_moveset_king(uint8_t i, Color color)
         if (black_castling_kingside)
         {
             if (is_empty(board[26]) && is_empty(board[27])
-            && !is_king_in_check(25, color) && !is_king_in_check(26, color) && !is_king_in_check(27, color))
+                    && !is_king_in_check(25, color) && !is_king_in_check(26, color) && !is_king_in_check(27, color))
             {
                 moveset.push_back(Move{25, 27, 3});
             }
@@ -593,7 +572,7 @@ std::vector<Move> ChessBoard::get_moveset_king(uint8_t i, Color color)
         if (black_castling_queenside)
         {
             if (is_empty(board[24]) && is_empty(board[23]) && is_empty(board[22])
-            && !is_king_in_check(25, color) && !is_king_in_check(24, color) && !is_king_in_check(23, color))
+                    && !is_king_in_check(25, color) && !is_king_in_check(24, color) && !is_king_in_check(23, color))
             {
                 moveset.push_back(Move{25, 23, 3});
             }
@@ -664,7 +643,7 @@ std::vector<Move> ChessBoard::get_moveset_knight(uint8_t i, Color color)
     uint8_t j;
     for (int8_t o : offset_knight)
     {
-        j = i + o;
+        j = static_cast<uint8_t>(i + o);
         // outside of board
         if (board[j] == -1) continue;
         // own piece
@@ -708,12 +687,11 @@ std::vector<Move> ChessBoard::get_moveset_pawn(uint8_t i, Color color)
     std::vector<Move> moveset;
     int8_t direction = color == Color::WHITE ? -1 : 1;
     // one square forward
-    uint8_t j = i + direction * 10;
+    uint8_t j = static_cast<uint8_t>(i + direction * 10);
     if (board[j] == 0)
     {
         // check for promotion
-        if (color == Color::WHITE && j < 29
-        || color == Color::BLACK && j > 90)
+        if ((color == Color::WHITE && j < 29) || (color == Color::BLACK && j > 90))
         {
             moveset.push_back(Move{i, j, 1});
         }
@@ -725,10 +703,9 @@ std::vector<Move> ChessBoard::get_moveset_pawn(uint8_t i, Color color)
     // two squares forward
     if (moveset.size() > 0)
     {
-        if (color == Color::WHITE && i > 80
-        || color == Color::BLACK && i < 39)
+        if ((color == Color::WHITE && i > 80) || (color == Color::BLACK && i < 39))
         {
-            j = i + direction * 20;
+            j = static_cast<uint8_t>(i + direction * 20);
             if (board[j] == 0)
             {
                 moveset.push_back(Move{i, j, 2});
@@ -736,13 +713,12 @@ std::vector<Move> ChessBoard::get_moveset_pawn(uint8_t i, Color color)
         }
     }
     // forward right
-    j = i + direction * 9;
+    j = static_cast<uint8_t>(i + direction * 9);
     // check en passant
     if (board[j] == 0)
     {
         uint8_t e = color == Color::WHITE ? i+1 : i-1;
-        if (color == Color::WHITE && board[e] == 2
-        || color == Color::BLACK && board[e] == 1)
+        if ((color == Color::WHITE && board[e] == 2) || (color == Color::BLACK && board[e] == 1))
         {
             if (enPassant == e)
             {
@@ -752,16 +728,23 @@ std::vector<Move> ChessBoard::get_moveset_pawn(uint8_t i, Color color)
     }
     else if (color == Color::WHITE ? is_black(board[j]) : is_white(board[j]))
     {
-        moveset.push_back(Move{i, j});
+        // check for promotion
+        if ((color == Color::WHITE && j < 29) || (color == Color::BLACK && j > 90))
+        {
+            moveset.push_back(Move{i, j, 1});
+        }
+        else
+        {
+            moveset.push_back(Move{i, j});
+        }
     }
     // forward left
-    j = i + direction * 11;
+    j = static_cast<uint8_t>(i + direction * 11);
     // check en passant
     if (board[j] == 0)
     {
         uint8_t e = color == Color::WHITE ? i-1 : i+1;
-        if (color == Color::WHITE && board[e] == 2
-        || color == Color::BLACK && board[e] == 1)
+        if ((color == Color::WHITE && board[e] == 2) || (color == Color::BLACK && board[e] == 1))
         {
             if (enPassant == e)
             {
@@ -771,7 +754,15 @@ std::vector<Move> ChessBoard::get_moveset_pawn(uint8_t i, Color color)
     }
     else if (color == Color::WHITE ? is_black(board[j]) : is_white(board[j]))
     {
-        moveset.push_back(Move{i, j});
+        // check for promotion
+        if ((color == Color::WHITE && j < 29) || (color == Color::BLACK && j > 90))
+        {
+            moveset.push_back(Move{i, j, 1});
+        }
+        else
+        {
+            moveset.push_back(Move{i, j});
+        }
     }
     return moveset;
 }
@@ -781,39 +772,39 @@ std::vector<Move> ChessBoard::get_legal_moveset(uint8_t index, Piece type)
     std::vector<Move> moveset;
     switch (type)
     {
-        case Piece::PAWN:
-        {
-            moveset = get_moveset_pawn(index, activePlayer);
-            break;
-        }
-        case Piece::BISHOP:
-        {
-            moveset = get_moveset_bishop(index, activePlayer);
-            break;
-        }
-        case Piece::KNIGHT:
-        {
-            moveset = get_moveset_knight(index, activePlayer);
-            break;
-        }
-        case Piece::ROOK:
-        {
-            moveset = get_moveset_rook(index, activePlayer);
-            break;
-        }
-        case Piece::QUEEN:
-        {
-            moveset = get_moveset_queen(index, activePlayer);
-            break;
-        }
-        case Piece::KING:
-        {
-            moveset = get_moveset_king(index, activePlayer);
-            break;
-        }
+    case Piece::PAWN:
+    {
+        moveset = get_moveset_pawn(index, activePlayer);
+        break;
+    }
+    case Piece::BISHOP:
+    {
+        moveset = get_moveset_bishop(index, activePlayer);
+        break;
+    }
+    case Piece::KNIGHT:
+    {
+        moveset = get_moveset_knight(index, activePlayer);
+        break;
+    }
+    case Piece::ROOK:
+    {
+        moveset = get_moveset_rook(index, activePlayer);
+        break;
+    }
+    case Piece::QUEEN:
+    {
+        moveset = get_moveset_queen(index, activePlayer);
+        break;
+    }
+    case Piece::KING:
+    {
+        moveset = get_moveset_king(index, activePlayer);
+        break;
+    }
     }
     std::vector<Move> legalMoveset;
-    for (int i = 0; i < moveset.size(); i++)
+    for (size_t i = 0; i < moveset.size(); i++)
     {
         if (is_legal(moveset[i], activePlayer))
         {
@@ -843,8 +834,8 @@ uint8_t ChessBoard::is_king_in_check(uint8_t i, Color color)
             if (color == Color::WHITE ? is_white(piece) : is_black(piece)) break;
             else if (color == Color::WHITE ? is_black(piece) : is_white(piece))
             {
-                if (color == Color::WHITE && (piece == 21 || piece == 24)
-                || color == Color::BLACK && (piece == 11 || piece == 14)) // rook or queen
+                if ((color == Color::WHITE && (piece == 21 || piece == 24))
+                        || (color == Color::BLACK && (piece == 11 || piece == 14))) // rook or queen
                 {
                     checkCount++;
                 }
@@ -868,8 +859,8 @@ uint8_t ChessBoard::is_king_in_check(uint8_t i, Color color)
             if (color == Color::WHITE ? is_white(piece) : is_black(piece)) break;
             else if (color == Color::WHITE ? is_black(piece) : is_white(piece))
             {
-                if (color == Color::WHITE && (piece == 23 || piece == 24)
-                || color == Color::BLACK && (piece == 13 || piece == 14)) // bishop or queen
+                if ((color == Color::WHITE && (piece == 23 || piece == 24))
+                        || (color == Color::BLACK && (piece == 13 || piece == 14))) // bishop or queen
                 {
                     checkCount++;
                 }
@@ -880,7 +871,7 @@ uint8_t ChessBoard::is_king_in_check(uint8_t i, Color color)
     // knight moves
     for (int8_t o : offset_knight)
     {
-        j = i + o;
+        j = static_cast<uint8_t>(i + o);
         int8_t piece = board[j];
         // empty
         if (is_empty(piece)) continue;
@@ -890,8 +881,8 @@ uint8_t ChessBoard::is_king_in_check(uint8_t i, Color color)
         if (color == Color::WHITE ? is_white(piece) : is_black(piece)) continue;
         else if (color == Color::WHITE ? is_black(piece) : is_white(piece))
         {
-            if (color == Color::WHITE && piece == 22
-            || color == Color::BLACK && piece == 12) //knight
+            if ((color == Color::WHITE && piece == 22)
+                    || (color == Color::BLACK && piece == 12)) //knight
             {
                 checkCount++;
             }
@@ -916,9 +907,9 @@ uint8_t ChessBoard::is_king_in_check(uint8_t i, Color color)
     // other king: check all squares in a distance of 2
     int k = color == Color::WHITE ? 20 : 10;
     if (board[i + 10] == k || board[i - 10] == k
-    || board[i + 11] == k || board[i - 11] == k
-    || board[i + 1] == k || board[i - 1] == k
-    || board[i + 9] == k || board[i - 9] == k)
+            || board[i + 11] == k || board[i - 11] == k
+            || board[i + 1] == k || board[i - 1] == k
+            || board[i + 9] == k || board[i - 9] == k)
     {
         checkCount++;
     }
@@ -928,7 +919,7 @@ uint8_t ChessBoard::is_king_in_check(uint8_t i, Color color)
 bool ChessBoard::is_legal(Move m, Color color)
 {
     int8_t king = color == Color::WHITE ? 10 : 20;
-    uint8_t kingPos;
+    uint8_t kingPos = 0;
     ChessBoard boardCopy{*this};
     // get position of king
     for (uint8_t i = 21; i < 99; i++)
@@ -939,28 +930,33 @@ bool ChessBoard::is_legal(Move m, Color color)
             break;
         }
     }
-    uint8_t checkBefore = boardCopy.is_king_in_check(kingPos, color);
-    // in case of double checking only king moves are legal
-    if (checkBefore > 1 && boardCopy.board[m.from] != king) return false;
-    if (boardCopy.board[m.from] == king) kingPos = m.to;
-    boardCopy.move_piece(m, true);
-    uint8_t checkAfter = boardCopy.is_king_in_check(kingPos, color);
-    // in case of (single) check only moves that remove the check are legal
-    if (checkBefore == 1 && checkAfter >= checkBefore) return false;
-    // moves where the king is in check afterwards are illegal
-    if (checkAfter > checkBefore) return false;
+    if (kingPos != 0)
+    {
+        uint8_t checkBefore = boardCopy.is_king_in_check(kingPos, color);
+        // in case of double checking only king moves are legal
+        if (checkBefore > 1 && boardCopy.board[m.from] != king) return false;
+        if (boardCopy.board[m.from] == king) kingPos = m.to;
+        boardCopy.move_piece(m, true);
+        uint8_t checkAfter = boardCopy.is_king_in_check(kingPos, color);
+        // in case of (single) check only moves that remove the check are legal
+        if (checkBefore == 1 && checkAfter >= checkBefore) return false;
+        // moves where the king is in check afterwards are illegal
+        if (checkAfter > checkBefore) return false;
+    }
     return true;
 }
 
 bool ChessBoard::is_move_possible() {
     std::vector<Move> moveset = get_moveset_all(activePlayer);
-    for (Move m : moveset) {
-        if (is_legal(m, activePlayer)) {
+    for (Move m : moveset)
+    {
+        if (is_legal(m, activePlayer))
+        {
             return true;
         }
     }
     int8_t king = activePlayer == Color::WHITE ? 10 : 20;
-    uint8_t kingPos;
+    uint8_t kingPos = 0;
     // get position of king
     for (uint8_t i = 21; i < 99; i++)
     {
@@ -970,11 +966,20 @@ bool ChessBoard::is_move_possible() {
             break;
         }
     }
-    if (is_king_in_check(kingPos, activePlayer)) {
-        endOfGame = activePlayer == Color::WHITE ? 2 : 1;
+    if (kingPos != 0)
+    {
+        if (is_king_in_check(kingPos, activePlayer))
+        {
+            endOfGame = activePlayer == Color::WHITE ? 2 : 1;
+        }
+        else
+        {
+            endOfGame = 3;
+        }
     }
-    else {
-        endOfGame = 3;
+    else
+    {
+        endOfGame = activePlayer == Color::WHITE ? 2 : 1;
     }
     return false;
 }
@@ -986,20 +991,16 @@ void ChessBoard::move_piece(Move m)
 
 void ChessBoard::move_piece(Move m, bool ignoreFlag)
 {
+    if (activePlayer == Color::BLACK)
+    {
+        moveCounter++;
+    }
     // count moves for fifty-moves rule
-    if (is_empty(board[m.to])) moveCounter++;
+    if (is_empty(board[m.to])) fiftyMovesRuleCounter++;
     else // capture
     {
-        moveCounter = 0;
+        fiftyMovesRuleCounter = 0;
         pieceCounter--;
-        if (!ignoreFlag)
-        {
-            std::cout << "   " 
-                << index_to_piece(m.to) 
-                << " got captured by " 
-                << index_to_piece(m.from)
-                << std::endl;
-        }
     }
     // check for checkmate
     if (board[m.to] == 20) endOfGame = 1; // white wins
@@ -1008,18 +1009,13 @@ void ChessBoard::move_piece(Move m, bool ignoreFlag)
     if (!ignoreFlag)
     {
         uint8_t e = activePlayer == Color::WHITE ? m.from-1 : m.from+1;
-        if (activePlayer == Color::WHITE && board[e] == 2
-        || activePlayer == Color::BLACK && board[e] == 1)
+        if ((activePlayer == Color::WHITE && board[e] == 2)
+                || (activePlayer == Color::BLACK && board[e] == 1))
         {
             if (enPassant == e)
             {
-                std::cout << "   " 
-                    << index_to_piece(enPassant) 
-                    << " got captured by " 
-                    << index_to_piece(m.from)
-                    << std::endl;
                 board[enPassant] = 0;
-                moveCounter = 0;
+                fiftyMovesRuleCounter = 0;
             }
         }
     }
@@ -1029,13 +1025,8 @@ void ChessBoard::move_piece(Move m, bool ignoreFlag)
     // handle flag
     if (!ignoreFlag)
     {
-        // promotion
-        if (m.flag == 1)
-        {
-            promote_pawn(m.to);
-        }
         // as passant
-        else if (m.flag == 2)
+        if (m.flag == 2)
         {
             enPassant = m.to;
         }
@@ -1093,62 +1084,42 @@ void ChessBoard::move_piece(Move m, bool ignoreFlag)
 void ChessBoard::check_draw()
 {
     // fifty moves rule
-    if (moveCounter > 50) endOfGame = 3;
+    if (fiftyMovesRuleCounter >= 50) endOfGame = 3;
     // TODO: other draws
 }
 
-void ChessBoard::promote_pawn(uint8_t index)
+void ChessBoard::promote_pawn(uint8_t index, Piece promotion)
 {
-    if (aiMove)
+    Color c = is_white(board[index]) ? Color::WHITE : Color::BLACK;
+    switch (promotion)
     {
-        board[index] = activePlayer==Color::WHITE? 14 : 24; // always promote AI pawn to queen
+    case Piece::QUEEN: // promote to queen
+    {
+        if (c == Color::WHITE) board[index] = 14;
+        else board[index] = 24;
+        break;
     }
-    else
+    case Piece::ROOK: // promote to rook
     {
-        std::cout << "   congratulation, you can promote your pawn" << std::endl
-            << "   [0] queen" << std::endl
-            << "   [1] rook" << std::endl
-            << "   [2] knight" << std::endl
-            << "   [3] bishop" << std::endl;
-        int selected_promotion = -1;
-        while (selected_promotion < 0 || selected_promotion > 3)
-        {
-            std::cout << " > select a promotion: ";
-            std::cin >> selected_promotion;
-            if (std::cin.fail())
-            {
-                std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                selected_promotion = -1;
-            }
-        }
-        Color c = is_white(board[index]) ? Color::WHITE : Color::BLACK;
-        switch (selected_promotion)
-        {
-            case 0: // promote to queen
-            {
-                if (c == Color::WHITE) board[index] = 14;
-                else board[index] = 24;
-                break;
-            }
-            case 1: // promote to rook
-            {
-                if (c == Color::WHITE) board[index] = 11;
-                else board[index] = 21;
-                break;
-            }
-            case 2: // promote to knight
-            {
-                if (c == Color::WHITE) board[index] = 12;
-                else board[index] = 22;
-                break;
-            }
-            case 3: // promote to bishop
-            {
-                if (c == Color::WHITE) board[index] = 13;
-                else board[index] = 23;
-                break;
-            }
-        }
+        if (c == Color::WHITE) board[index] = 11;
+        else board[index] = 21;
+        break;
+    }
+    case Piece::KNIGHT: // promote to knight
+    {
+        if (c == Color::WHITE) board[index] = 12;
+        else board[index] = 22;
+        break;
+    }
+    case Piece::BISHOP: // promote to bishop
+    {
+        if (c == Color::WHITE) board[index] = 13;
+        else board[index] = 23;
+        break;
+    }
+    default:
+    {
+        break;
+    }
     }
 }
