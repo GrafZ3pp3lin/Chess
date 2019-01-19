@@ -29,7 +29,7 @@ class Mediator
         void setMode(bool singleplayer);
         void setAIDifficulty(Difficulty d);
         void newGame();
-        void promotePawn(Piece promotion);
+        void promotePawn(Piece promotion, bool ai);
 
     private:
         QObject *root;

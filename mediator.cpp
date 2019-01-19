@@ -242,6 +242,8 @@ void Mediator::hideGreenSquares()
         }
     }
     validMoveSquares->clear();
+    QCoreApplication::processEvents();
+    delay(100);
 }
 
 void Mediator::showMoveSet(uint8_t pieceIndex, QRect &square)
@@ -528,7 +530,7 @@ void Mediator::movePiece(Move m, bool guiOnly)
         {
             uint8_t index_10x12 = index_8x8_to_10x12(promotablePawn->property("pos").toInt());
             Piece pawn_to_piece = ai->get_promote_pawn(chessBoard, index_10x12);
-            promotePawn(pawn_to_piece);
+            promotePawn(pawn_to_piece, true);
         }
     }
     else if(m.flag == 3) // castling
@@ -622,12 +624,10 @@ void Mediator::makeAIMove()
 bool Mediator::checkFEN(const char* fen)
 {
     bool valid = chessBoard->load_from_FEN(fen);
-    if (!valid)
+    chessBoard->init();
+    if (valid)
     {
-        chessBoard->init();
-    }
-    else
-    {
+        chessBoard->load_from_FEN(fen);
         refreshGUI();
         if (chessBoard->activePlayer == Color::BLACK)
         {
@@ -718,6 +718,8 @@ void Mediator::refreshGUI()
     whiteKing->setVisible(wK);
     blackQueen->setVisible(bQ);
     blackKing->setVisible(bK);
+    QCoreApplication::processEvents();
+    delay(100);
 }
 
 void Mediator::setMode(bool singleplayer)
@@ -736,14 +738,14 @@ void Mediator::newGame()
     refreshGUI();
 }
 
-void Mediator::promotePawn(Piece promotion)
+void Mediator::promotePawn(Piece promotion, bool ai)
 {
     uint8_t index_10x12 = index_8x8_to_10x12(promotablePawn->property("pos").toInt());
     chessBoard->promote_pawn(index_10x12, promotion);
     promotablePawn = nullptr;
     refreshGUI();
     //Fehler: nach black promotion
-    if (singleplayer && chessBoard->activePlayer == Color::WHITE)
+    if (!ai)
     {
         delay(250);
         makeAIMove();

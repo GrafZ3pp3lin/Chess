@@ -66,11 +66,11 @@ void Receiver::receive_FEN(QString fen, bool file, QQuickItem *selection)
 void Receiver::receive_promotion(QString promotion)
 {
     promotion = promotion.toLower();
-    if (promotion == "queen") mediator->promotePawn(Piece::QUEEN);
-    else if (promotion == "rook") mediator->promotePawn(Piece::ROOK);
-    else if (promotion == "knight") mediator->promotePawn(Piece::KNIGHT);
-    else if (promotion == "bishop") mediator->promotePawn(Piece::BISHOP);
-    else mediator->promotePawn(Piece::QUEEN);
+    if (promotion == "queen") mediator->promotePawn(Piece::QUEEN, false);
+    else if (promotion == "rook") mediator->promotePawn(Piece::ROOK, false);
+    else if (promotion == "knight") mediator->promotePawn(Piece::KNIGHT, false);
+    else if (promotion == "bishop") mediator->promotePawn(Piece::BISHOP, false);
+    else mediator->promotePawn(Piece::QUEEN, false);
 }
 
 bool Receiver::receice_save(QString location)
