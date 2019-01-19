@@ -24,17 +24,17 @@ void AI::set_difficulty(Difficulty dif) {
     {
         case Difficulty::EASY:
             MAX_DEPTH = 3;
-            gameValueOffset = 150;
+            gameValueOffset = 80;
             useDirectestCheckMate = false;
             break;
         case Difficulty::HARD:
             MAX_DEPTH = 5;
-            gameValueOffset = 10;
+            gameValueOffset = 5;
             useDirectestCheckMate = true;
             break;
         default:
             MAX_DEPTH = 4;
-            gameValueOffset = 75;
+            gameValueOffset = 40;
             useDirectestCheckMate = true;
     }
 }
@@ -45,7 +45,7 @@ Move AI::get_next_move(std::shared_ptr<ChessBoard>& board)
     
     //Eröffnungen
     Move m = Move{static_cast<uint8_t>(0), static_cast<uint8_t>(0)};
-    if(board->moveCounter < 3)
+    if(board->moveCounter < 3 && opening.size() > 0)
         if (board->is_legal(m = opening_move(board), board->activePlayer) && contains<Move>(moveset,m))
     {
         return m;
@@ -104,11 +104,11 @@ RatedMove AI::start_calculate_move(Move m, ChessBoard *board)
     ChessBoard boardCopy{*board};
     boardCopy.move_piece(m, true);
     boardCopy.activePlayer = !boardCopy.activePlayer;
-    return RatedMove {m, calculate(boardCopy, true, 1, std::numeric_limits<int>::min(), std::numeric_limits<int>::max())};
+    return RatedMove {m, calculate(boardCopy, 1, std::numeric_limits<int>::min(), std::numeric_limits<int>::max())};
 }
 
 //calculate Moves recursive 
-int AI::calculate(ChessBoard &board, bool oponent, int depth, int alpha, int beta)
+int AI::calculate(ChessBoard &board, int depth, int alpha, int beta)
 {
     if (depth == MAX_DEPTH)
     {
@@ -131,7 +131,7 @@ int AI::calculate(ChessBoard &board, bool oponent, int depth, int alpha, int bet
     v.highest = board.activePlayer == Color::BLACK ? beta : alpha;
     for (ChessBoard &b : boards)
     {
-        int temp = calculate(b, !oponent, depth+1, board.activePlayer == Color::BLACK ? alpha : v.highest, board.activePlayer == Color::WHITE ? beta : v.lowest);
+        int temp = calculate(b, depth+1, board.activePlayer == Color::BLACK ? alpha : v.highest, board.activePlayer == Color::WHITE ? beta : v.lowest);
         if (board.activePlayer == Color::BLACK)
         {
             if (useDirectestCheckMate && temp < -1000000)
@@ -164,6 +164,23 @@ int AI::calculate(ChessBoard &board, bool oponent, int depth, int alpha, int bet
         }
     }
     return v.highest;
+}
+
+Piece AI::get_promote_pawn(std::shared_ptr<ChessBoard>& board, uint8_t index)
+{
+    //Calculate for Queen and Knight
+    int best_queen, best_knight;
+    for (int i = 0; i < 2; i++) {
+        ChessBoard boardCopy{*board.get()};
+        boardCopy.promote_pawn(index, i == 0 ? Piece::QUEEN : Piece::KNIGHT);
+        boardCopy.activePlayer = !boardCopy.activePlayer;
+        i == 0 ? best_queen : best_knight = calculate(boardCopy, 0, std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
+    }
+    if ((board->activePlayer == Color::BLACK && best_knight < best_queen)
+    || (board->activePlayer == Color::WHITE && best_knight > best_queen)) {
+        return Piece::KNIGHT;
+    }
+    return Piece::QUEEN;
 }
 
 void AI::add_opening_move(Move m, int moveCounter)
