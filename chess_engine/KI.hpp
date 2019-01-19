@@ -41,17 +41,18 @@ class AI
         AI();
         ~AI();
         Move get_next_move(std::shared_ptr<ChessBoard>& board);
+        Piece get_promote_pawn(std::shared_ptr<ChessBoard>& board, uint8_t index);
         void set_difficulty(Difficulty dif);
         void add_opening_move(Move,int);
 
     private:
         int MAX_DEPTH;
-        int gameValueOffset = 75;
+        int gameValueOffset = 40;
         bool useDirectestCheckMate;
         std::vector<Move> opening;
 
         RatedMove start_calculate_move(Move m, ChessBoard *board);
-        int calculate(ChessBoard &board, bool oponent, int depth, int alpha, int beta);
+        int calculate(ChessBoard &board, int depth, int alpha, int beta);
         Move opening_move(std::shared_ptr<ChessBoard>& board);
 };
 

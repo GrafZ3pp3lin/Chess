@@ -526,7 +526,9 @@ void Mediator::movePiece(Move m, bool guiOnly)
         }
         else // AI promotion
         {
-            promotePawn(Piece::QUEEN);
+            uint8_t index_10x12 = index_8x8_to_10x12(promotablePawn->property("pos").toInt());
+            Piece pawn_to_piece = ai->get_promote_pawn(chessBoard, index_10x12);
+            promotePawn(pawn_to_piece);
         }
     }
     else if(m.flag == 3) // castling
