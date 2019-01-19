@@ -328,7 +328,6 @@ Window {
                 text: "easy"
                 w: 2*settingsWidth + parent.columnSpacing
                 h: settingsHeight/2 - parent.rowSpacing/2
-                borderColorHover: "green"
 
                 onEvent: {
                     receiver.receice_difficulty("easy")
@@ -342,7 +341,7 @@ Window {
                 text: "normal"
                 w: 2*settingsWidth + parent.columnSpacing
                 h: settingsHeight/2 - parent.rowSpacing/2
-                borderColorHover: "yellow"
+                borderColorHover: "#ffdc00"
 
                 onEvent: {
                     receiver.receice_difficulty("normal")
@@ -356,7 +355,7 @@ Window {
                 text: "hard"
                 w: 2*settingsWidth + parent.columnSpacing
                 h: settingsHeight/2 - parent.rowSpacing/2
-                borderColorHover: "red"
+                borderColorHover: "#ff4136"
 
                 onEvent: {
                     receiver.receice_difficulty("hard")

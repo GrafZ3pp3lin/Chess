@@ -71,7 +71,7 @@ Zusätzlich:
 
 Die GUI wurde mit Qt 5.12 und Qt Quick entwickelt.
 
-Unter [releases](https://github.com/GrafZ3pp3lin/Chess/tree/master/releases) sind bereits lauffähige Anwedungen für Windows und Linux zu finden.
+Unter [releases](https://github.com/GrafZ3pp3lin/Chess/tree/master/releases) ist bereits eine Anwedungen für Windows (x64) zu finden.
 
 ## Deployment (Windows)
 
