@@ -329,6 +329,7 @@ Window {
                 text: "easy"
                 w: 2*settingsWidth + parent.columnSpacing
                 h: settingsHeight/2 - parent.rowSpacing/2
+
                 onEvent: {
                     receiver.receice_difficulty("easy")
                     selectionDifficulty.visible = false
@@ -341,6 +342,7 @@ Window {
                 text: "normal"
                 w: 2*settingsWidth + parent.columnSpacing
                 h: settingsHeight/2 - parent.rowSpacing/2
+
                 onEvent: {
                     receiver.receice_difficulty("normal")
                     selectionDifficulty.visible = false
@@ -353,6 +355,7 @@ Window {
                 text: "hard"
                 w: 2*settingsWidth + parent.columnSpacing
                 h: settingsHeight/2 - parent.rowSpacing/2
+
                 onEvent: {
                     receiver.receice_difficulty("hard")
                     selectionDifficulty.visible = false

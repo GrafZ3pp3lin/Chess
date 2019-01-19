@@ -1,5 +1,6 @@
 #include "MoveGenerator.hpp"
 
+
 uint8_t square_to_index(char square[2])
 {
     return static_cast<uint8_t>((10 - (square[1] - 48)) * 10 // rank
@@ -138,6 +139,7 @@ bool ChessBoard::load_from_FEN(const char *fen)
     //piece positions
     int next = 0;
     int index = 21;
+    pieceCounter = 0;
     int n = 0;
     while (fen[n] != '\0') n++;
     for(int i = 0; i < n; i++)
@@ -153,6 +155,7 @@ bool ChessBoard::load_from_FEN(const char *fen)
             }
             board[index] = transfer_back(c);
             index++;
+            pieceCounter++;
         }
         else if (c > 48 && c < 57)
         {
@@ -1078,14 +1081,80 @@ void ChessBoard::move_piece(Move m, bool ignoreFlag)
     if (m.from == 25 || m.from == 28) black_castling_kingside = false;
     if (m.from == 25 || m.from == 21) black_castling_queenside = false;
     // check for a draw due to fifty-moves rule, king-against-king, etc.
+    std::cout << "drawcheck" << std::endl;
     check_draw();
+
 }
 
 void ChessBoard::check_draw()
 {
+
     // fifty moves rule
     if (fiftyMovesRuleCounter >= 50) endOfGame = 3;
-    // TODO: other draws
+
+    //king vs king
+    if(pieceCounter == 2) endOfGame = 3;
+    std::cout << std::to_string(pieceCounter) << std::endl;
+
+    //king vs king/bishop
+    //king vs king/knight
+    if(pieceCounter == 3){
+        for(int i = 21; i < 100; i++){
+            if(board[i] == 23 ||board[i] == 13 || board[i] == 22 ||board[i] == 12){
+                endOfGame = 3;
+            }
+        }
+    }
+
+    //king/bishop vs king/bishop
+    if(pieceCounter == 4){
+        int8_t black = 0;
+        int8_t white = 0;
+        for(int8_t i = 21; i < 100; i++){
+            if(board[i] == 23 && black == 0){
+                black = i;
+            }
+            else if(board[i] == 13 && white == 0){
+                white = i;
+            }
+            if(is_black(black) == is_black(white) && black != 0 && white != 0){
+                endOfGame = 3;
+            }
+        }
+    }
+
+    //Threefoldrepetition
+    ThreefoldData data;
+    for(int i = 0; i < 120; i++){
+        data.board[i] = board[i];
+    }
+    data.enPassant = enPassant;
+    data.black_castling_kingside = black_castling_kingside;
+    data.white_castling_kingside = white_castling_kingside;
+    data.black_castling_queenside = data.black_castling_queenside;
+    data.white_castling_queenside = data.white_castling_queenside;
+
+    threefold.push_back(data);
+
+
+    for(auto t: threefold){
+        int count = 0;
+        for(auto t2: threefold){
+            if(t2 == t){
+                count++;
+            }
+            if(count == 3){
+                endOfGame = 3;
+                break;
+            }
+        }
+        if(count == 3){
+            break;
+        }
+    }
+
+
+
 }
 
 void ChessBoard::promote_pawn(uint8_t index, Piece promotion)

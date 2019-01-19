@@ -7,6 +7,8 @@
 #include <iostream>
 #include <limits>
 
+class ThreefoldData;
+
 char transfer(int);
 int8_t transfer_back(char);
 
@@ -105,6 +107,7 @@ class ChessBoard
         bool white_castling_queenside = true;   // only check, whether king or rook have move during the game;
         bool black_castling_kingside = true;    // other castling-rules are checked during move generation
         bool black_castling_queenside = true;   //
+        std::vector<ThreefoldData> threefold;
         std::vector<Move> get_moveset_king(uint8_t index);
         std::vector<Move> get_moveset_king(uint8_t index, Color color);
         std::vector<Move> get_moveset_queen(uint8_t index);
@@ -121,6 +124,27 @@ class ChessBoard
         bool is_black(int8_t p);
         void check_draw();
         char* index_to_piece(uint8_t index);
+};
+
+class ThreefoldData{
+public:
+    int8_t board[120];
+    uint8_t enPassant;
+    bool white_castling_kingside;
+    bool white_castling_queenside;
+    bool black_castling_kingside;
+    bool black_castling_queenside;
+
+    friend bool operator==(const ThreefoldData& t1, const ThreefoldData&t2)
+    {
+        for(int i = 0; i < 120; i++){
+            if(t1.board[i] != t2.board[i]){
+                return false;
+            }
+        }
+        return t1.enPassant == t2.enPassant && t1.white_castling_kingside == t2.white_castling_kingside && t1.black_castling_kingside == t2.black_castling_kingside
+                && t1.white_castling_queenside == t2.white_castling_queenside && t1.black_castling_queenside == t2.black_castling_queenside;
+    }
 };
 
 #endif
