@@ -1028,6 +1028,14 @@ void ChessBoard::move_piece(Move m, bool ignoreFlag)
     // move piece
     board[m.to] = board[m.from];
     board[m.from] = 0;
+    //KI promote Pawn temporaly to Queen
+    if (ignoreFlag) 
+    {
+        if (activePlayer == Color::BLACK && (int)(m.to / 10) == 9)
+        {
+            board[m.to] = 24;
+        }
+    }
     // handle flag
     if (!ignoreFlag)
     {
