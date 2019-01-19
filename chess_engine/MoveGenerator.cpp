@@ -1092,8 +1092,10 @@ void ChessBoard::move_piece(Move m, bool ignoreFlag)
     if (m.from == 25 || m.from == 28) black_castling_kingside = false;
     if (m.from == 25 || m.from == 21) black_castling_queenside = false;
     // check for a draw due to fifty-moves rule, king-against-king, etc.
-    check_draw();
-
+    if (!ignoreFlag)
+    {
+        check_draw();
+    }
 }
 
 void ChessBoard::check_draw()
