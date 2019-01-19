@@ -104,6 +104,7 @@ Window {
 
             Menu {
                 id: menu
+                width: 200
 
                 Action {
                     text: "New Game (discards current one)"
@@ -137,7 +138,6 @@ Window {
 
                 delegate: MenuItem {
                     id: menuItem
-                    implicitWidth: 200
                     implicitHeight: 40
 
                     contentItem: Text {
@@ -153,7 +153,6 @@ Window {
                     }
 
                     background: Rectangle {
-                        implicitWidth: 200
                         implicitHeight: 40
                         opacity: enabled ? 1 : 0.3
                         border.color: "#228822"
