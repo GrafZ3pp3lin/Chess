@@ -742,7 +742,8 @@ void Mediator::promotePawn(Piece promotion)
     chessBoard->promote_pawn(index_10x12, promotion);
     promotablePawn = nullptr;
     refreshGUI();
-    /*if (singleplayer)
+    /*  Fehler: nach black promotion
+    if (singleplayer)
     {
         delay(250);
         makeAIMove();
