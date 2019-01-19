@@ -282,6 +282,10 @@ void ChessBoard::init()
     fiftyMovesRuleCounter = 0;
     moveCounter = 1;
     gameValue = 0;
+    white_castling_kingside = true;
+    white_castling_queenside = true;
+    black_castling_kingside = true;
+    black_castling_queenside = true;
     // off the board
     for (uint8_t i = 0; i < 120; i++)
     {
