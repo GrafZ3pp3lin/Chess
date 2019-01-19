@@ -45,7 +45,7 @@ Move AI::get_next_move(std::shared_ptr<ChessBoard>& board)
     
     //Eröffnungen
     Move m = Move{static_cast<uint8_t>(0), static_cast<uint8_t>(0)};
-    if(board->moveCounter < 3)
+    if(board->moveCounter < 3 && opening.size() > 0)
         if (board->is_legal(m = opening_move(board), board->activePlayer) && contains<Move>(moveset,m))
     {
         return m;

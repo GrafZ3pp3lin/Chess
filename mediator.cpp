@@ -593,15 +593,27 @@ void Mediator::movePiece(Move m, bool guiOnly)
 
 void Mediator::makeAIMove()
 {
-    Move m = ai->get_next_move(chessBoard);
-    QQuickItem *guiPiece = getPieceByIndex(m.from);
-    if (guiPiece != nullptr)
-    {
-        selectedPiece = guiPiece;
-        movePiece(m, false);
-    }
-    chessBoard->activePlayer = !chessBoard->activePlayer;
     if (!chessBoard->is_move_possible())
+    {
+        endGame();
+        return;
+    }
+    try
+    {
+        Move m = ai->get_next_move(chessBoard);
+        QQuickItem *guiPiece = getPieceByIndex(m.from);
+        if (guiPiece != nullptr)
+        {
+            selectedPiece = guiPiece;
+            movePiece(m, false);
+        }
+        chessBoard->activePlayer = !chessBoard->activePlayer;
+        if (!chessBoard->is_move_possible())
+        {
+            endGame();
+        }
+    }
+    catch (...)
     {
         endGame();
     }
