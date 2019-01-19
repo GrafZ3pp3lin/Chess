@@ -123,6 +123,7 @@ std::string ChessBoard::convert_to_FEN()
 
 bool ChessBoard::load_from_FEN(const char *fen)
 {
+    threefold.clear();
     //init empty board
     for(int i = 0; i < 120; i++)
     {
@@ -322,6 +323,8 @@ void ChessBoard::init()
     }
     // white player starts the game
     activePlayer = Color::WHITE;
+    //clear threefold from last game
+    threefold.clear();
 }
 
 char transfer(int id)
@@ -1081,7 +1084,6 @@ void ChessBoard::move_piece(Move m, bool ignoreFlag)
     if (m.from == 25 || m.from == 28) black_castling_kingside = false;
     if (m.from == 25 || m.from == 21) black_castling_queenside = false;
     // check for a draw due to fifty-moves rule, king-against-king, etc.
-    std::cout << "drawcheck" << std::endl;
     check_draw();
 
 }
@@ -1094,7 +1096,6 @@ void ChessBoard::check_draw()
 
     //king vs king
     if(pieceCounter == 2) endOfGame = 3;
-    std::cout << std::to_string(pieceCounter) << std::endl;
 
     //king vs king/bishop
     //king vs king/knight
@@ -1152,9 +1153,6 @@ void ChessBoard::check_draw()
             break;
         }
     }
-
-
-
 }
 
 void ChessBoard::promote_pawn(uint8_t index, Piece promotion)
