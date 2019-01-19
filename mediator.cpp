@@ -742,11 +742,11 @@ void Mediator::promotePawn(Piece promotion)
     chessBoard->promote_pawn(index_10x12, promotion);
     promotablePawn = nullptr;
     refreshGUI();
-    if (singleplayer)
+    /*if (singleplayer)
     {
         delay(250);
         makeAIMove();
-    }
+    }*/
 }
 
 void Mediator::endGame()

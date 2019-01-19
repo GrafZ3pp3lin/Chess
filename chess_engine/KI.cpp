@@ -174,7 +174,7 @@ Piece AI::get_promote_pawn(std::shared_ptr<ChessBoard>& board, uint8_t index)
         ChessBoard boardCopy{*board.get()};
         boardCopy.promote_pawn(index, i == 0 ? Piece::QUEEN : Piece::KNIGHT);
         boardCopy.activePlayer = !boardCopy.activePlayer;
-        i == 0 ? best_queen : best_knight = calculate(boardCopy, 0, std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
+        (i == 0 ? best_queen : best_knight) = calculate(boardCopy, 0, std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
     }
     if ((board->activePlayer == Color::BLACK && best_knight < best_queen)
     || (board->activePlayer == Color::WHITE && best_knight > best_queen)) {
