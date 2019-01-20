@@ -49,7 +49,6 @@ Move AI::get_next_move(std::shared_ptr<ChessBoard>& board)
         m = opening_move(board);
         if (board->is_legal(m, board->activePlayer))
         {
-            std::cout << "check" << std::endl;
             for(Move m2: moveset){
                 if(m2 == m){
                     //return m2, da in den moves von moveset auch das flag gesetzt wurde, bei den moves von opening_move werden keine flags gesetzt
