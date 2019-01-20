@@ -45,10 +45,18 @@ Move AI::get_next_move(std::shared_ptr<ChessBoard>& board)
     
     //Eröffnungen
     Move m = Move{static_cast<uint8_t>(0), static_cast<uint8_t>(0)};
-    if(board->moveCounter < 3 && opening.size() > 0)
-        if (board->is_legal(m = opening_move(board), board->activePlayer) && contains<Move>(moveset,m))
-    {
-        return m;
+    if(board->moveCounter < 4 && opening.size() > 0){
+        m = opening_move(board);
+        if (board->is_legal(m, board->activePlayer))
+        {
+            std::cout << "check" << std::endl;
+            for(Move m2: moveset){
+                if(m2 == m){
+                    //return m2, da in den moves von moveset auch das flag gesetzt wurde, bei den moves von opening_move werden keine flags gesetzt
+                    return m2;
+                }
+            }
+        }
     }
 
     std::vector<std::future<RatedMove>> futures;
@@ -185,6 +193,9 @@ Piece AI::get_promote_pawn(std::shared_ptr<ChessBoard>& board, uint8_t index)
 
 void AI::add_opening_move(Move m, int moveCounter)
 {
+    if(moveCounter == 0){
+        opening.clear();
+    }
     if(moveCounter < 3)
     {
         opening.push_back(m);

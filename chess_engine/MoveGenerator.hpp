@@ -59,7 +59,7 @@ class Move
     uint8_t flag = 0;   // 1: promotion, 2: en passant, 3: castling
     friend bool operator==(const Move& m1, const Move& m2)
     {
-        if(m1.from == m2.from && m1.to == m2.to && m1.flag == m2.flag)
+        if(m1.from == m2.from && m1.to == m2.to)
         {
             return true;
         }

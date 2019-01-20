@@ -2,18 +2,7 @@
 #define DHBW_CHESS_KI
 
 #include "MoveGenerator.hpp"
-
 #include <memory>
-
-template <typename T>
-bool contains(std::vector<T> vec, T val){
-    for(T a: vec){
-        if(a == val){
-            return true;
-        }
-    }
-    return false;
-}
 
 union Value {
     int highest;
